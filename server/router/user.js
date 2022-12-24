@@ -94,7 +94,10 @@ router.get('/up-voted', verify, async (req, res) => {
 	const userId = decodedToken.id;
 	// Get all up voted posts
 	const user = await User.findById(userId);
-	const posts = await Post.find({ _id: { $in: user.upVotedPosts } });
+	const posts = await Post.find(
+		{ _id: { $in: user.upVotedPosts } },
+		{ sort: { date: 1 } }
+	);
 	try {
 		return res.status(200).send({
 			posts: posts,
@@ -111,7 +114,9 @@ router.get('/down-voted', verify, async (req, res) => {
 	const userId = decodedToken.id;
 	// Get all up voted posts
 	const user = await User.findById(userId);
-	const posts = await Post.find({ _id: { $in: user.downVotedPosts } });
+	const posts = await Post.find({ _id: { $in: user.downVotedPosts } }).sort({
+		date: -1,
+	});
 	try {
 		return res.status(200).send({
 			posts: posts,

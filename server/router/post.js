@@ -10,7 +10,7 @@ const verify = require('../auth/verifyToken');
 // Get all posts
 router.get('/', verify, async (req, res) => {
 	try {
-		const posts = await Post.find({ sort: { date: -1 } });
+		const posts = await Post.find().sort({ date: -1 });
 		res.status(200).send(posts);
 	} catch (err) {
 		res.status(400).send(err);
@@ -35,10 +35,9 @@ router.get('/user', verify, async (req, res) => {
 	const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
 	// Get posts
 	try {
-		const posts = await Post.find(
-			{ creatorId: decodedToken.id },
-			{ sort: { date: -1 } }
-		);
+		const posts = await Post.find({ creatorId: decodedToken.id }).sort({
+			date: -1,
+		});
 		res.status(200).send(posts);
 	} catch (err) {
 		res.status(400).send(err);
@@ -54,10 +53,9 @@ router.get('/comment/:id', verify, async (req, res) => {
 	}
 	// Get comments
 	try {
-		const comments = await Post.find(
-			{ parentId: parentId },
-			{ sort: { date: -1 } }
-		);
+		const comments = await Post.find({ parentId: parentId }).sort({
+			date: -1,
+		});
 		res.status(200).send(comments);
 	} catch (err) {
 		res.status(400).send(err);
