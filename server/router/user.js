@@ -30,7 +30,7 @@ router.post('/register', async (req, res) => {
 	const hashPassword = await bcrypt.hash(req.body.password, salt);
 	// Create a new user
 	const user = new User({
-		username: req.body.username,
+		name: req.body.name,
 		email: req.body.email,
 		password: hashPassword,
 	});
@@ -62,7 +62,7 @@ router.post('/login', async (req, res) => {
 	const token = jwt.sign({ id: user._id }, process.env.TOKEN_SECRET);
 	res.header('auth-token', token).status(200).send({
 		token: token,
-		username: user.username,
+		name: user.name,
 		email: user.email,
 		msg: 'Logged in successfully',
 	});
@@ -87,17 +87,16 @@ router.get('/stat', verify, async (req, res) => {
 	}
 });
 
-router.get('/up-voted', verify, async (req, res) => {
+router.get('/upvoted', verify, async (req, res) => {
 	// Get user's id
 	const token = req.header('auth-token');
 	const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
 	const userId = decodedToken.id;
 	// Get all up voted posts
 	const user = await User.findById(userId);
-	const posts = await Post.find(
-		{ _id: { $in: user.upVotedPosts } },
-		{ sort: { date: 1 } }
-	);
+	const posts = await Post.find({ _id: { $in: user.upVotedPosts } }).sort({
+		date: -1,
+	});
 	try {
 		return res.status(200).send({
 			posts: posts,
@@ -107,7 +106,7 @@ router.get('/up-voted', verify, async (req, res) => {
 	}
 });
 
-router.get('/down-voted', verify, async (req, res) => {
+router.get('/downvoted', verify, async (req, res) => {
 	// Get user's id
 	const token = req.header('auth-token');
 	const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);

@@ -8,18 +8,20 @@ const Post = new mongoose.Schema(
 		},
 		parentId: {
 			type: mongoose.Types.ObjectId,
-			requried: false,
+			default: null,
 		},
 		creatorName: {
 			type: String,
 			require: true,
 		},
+		title: {
+			type: String,
+		},
 		content: {
 			type: String,
 			required: true,
 		},
-		title: String,
-		image: String,
+		image: { type: String, required: false },
 		votes: {
 			type: Number,
 			default: 0,

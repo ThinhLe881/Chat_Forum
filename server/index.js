@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const userRoute = require('./router/user');
 const postRoute = require('./router/post');
+const commentRoute = require('./router/comment');
 const voteRoute = require('./router/vote');
 
 dotenv.config();
@@ -31,8 +32,9 @@ app.get('/', function (req, res) {
 	return res.send('Welcome to Chat Forum');
 });
 
-app.use('/user', userRoute);
-app.use('/post', postRoute);
-app.use('/vote', voteRoute);
+app.use('/users', userRoute);
+app.use('/posts', postRoute);
+app.use('/comments', commentRoute);
+app.use('/votes', voteRoute);
 
 app.listen(PORT, () => console.log(`Server is running on port: ${PORT}`));

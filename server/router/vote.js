@@ -7,8 +7,8 @@ const Post = require('../models/post.model');
 
 const verify = require('../auth/verifyToken');
 
-// Upvote a post or comment
-router.patch('/vote/up/:id', verify, async (req, res) => {
+// Add upvote to a post or comment
+router.patch('/upvote/:id', verify, async (req, res) => {
 	const postId = req.params.id;
 	// Get user's id
 	const token = req.header('auth-token');
@@ -37,8 +37,8 @@ router.patch('/vote/up/:id', verify, async (req, res) => {
 	}
 });
 
-// Undo upvote a post or comment
-router.patch('/vote/up-undo/:id', verify, async (req, res) => {
+// Delete upvote in a post or comment
+router.patch('/upvote/undo/:id', verify, async (req, res) => {
 	const postId = req.params.id;
 	// Get user's id
 	const token = req.header('auth-token');
@@ -68,7 +68,7 @@ router.patch('/vote/up-undo/:id', verify, async (req, res) => {
 });
 
 // Downvote a post or comment
-router.patch('/vote/up/:id', verify, async (req, res) => {
+router.patch('/downvote/:id', verify, async (req, res) => {
 	const postId = req.params.id;
 	// Get user's id
 	const token = req.header('auth-token');
@@ -98,8 +98,8 @@ router.patch('/vote/up/:id', verify, async (req, res) => {
 });
 
 // Undo downvote a post or comment
-router.patch('/vote/up-undo/:id', verify, async (req, res) => {
-	const postId = req.params.id;
+router.patch('/downvote/undo/:id', verify, async (req, res) => {
+	const postId = req.body.id;
 	// Get user's id
 	const token = req.header('auth-token');
 	const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);

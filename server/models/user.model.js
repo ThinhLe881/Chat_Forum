@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const User = new mongoose.Schema(
 	{
-		username: {
+		name: {
 			type: String,
 			required: true,
 			min: 6,
@@ -40,8 +40,11 @@ const User = new mongoose.Schema(
 			default: 0,
 		},
 		// the posts that the user upvoted or downvoted
-		upVotedPosts: [mongoose.Types.ObjectId],
-		downVotedPosts: [mongoose.Types.ObjectId],
+		// might change it later due to document size limit
+		// -> create votedPosts collections
+		// 		each document stored userId and postId that been up/down voted
+		upVotedPosts: [{ type: mongoose.Types.ObjectId }],
+		downVotedPosts: [{ type: mongoose.Types.ObjectId }],
 	},
 	{
 		collection: 'users',
