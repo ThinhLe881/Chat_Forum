@@ -1,10 +1,14 @@
 import { Schema, Types, model } from 'mongoose';
 
-const postSchema = new Schema(
+const commentSchema = new Schema(
 	{
 		creatorId: {
 			type: Types.ObjectId,
 			required: true,
+		},
+		parentId: {
+			type: Types.ObjectId,
+			default: null,
 		},
 		creatorName: {
 			type: String,
@@ -32,8 +36,8 @@ const postSchema = new Schema(
 		},
 	},
 	{
-		collection: 'posts',
+		collection: 'comments',
 	}
 );
 
-export default model('posts', postSchema);
+export default model('comments', commentSchema);

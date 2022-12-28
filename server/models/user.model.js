@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import { Schema, model } from 'mongoose';
 
-const User = new mongoose.Schema(
+const userSchema = new Schema(
 	{
 		name: {
 			type: String,
@@ -39,16 +39,10 @@ const User = new mongoose.Schema(
 			type: Number,
 			default: 0,
 		},
-		// the posts that the user upvoted or downvoted
-		// might change it later due to document size limit
-		// -> create votedPosts collections
-		// 		each document stored userId and postId that been up/down voted
-		upVotedPosts: [{ type: mongoose.Types.ObjectId }],
-		downVotedPosts: [{ type: mongoose.Types.ObjectId }],
 	},
 	{
 		collection: 'users',
 	}
 );
 
-module.exports = mongoose.model('users', User);
+export default model('users', userSchema);
