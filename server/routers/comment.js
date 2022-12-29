@@ -4,10 +4,11 @@ import {
 	editComment,
 	deleteComment,
 	voteComment,
-} from '../controllers/comment';
-import { verifyToken } from '../middleware/auth';
+} from '../controllers/comment.js';
+import { verifyToken } from '../middleware/auth.js';
+import express from 'express';
 
-const router = require('express').Router();
+const router = express.Router();
 
 router.get('/:id', getComments);
 router.post('/:id', verifyToken, addComment);

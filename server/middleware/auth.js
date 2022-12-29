@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const Joi = require('@hapi/joi');
+import jwt from 'jsonwebtoken';
+import Joi from '@hapi/joi';
 
 export const registerValidation = (data) => {
 	const schema = Joi.object({

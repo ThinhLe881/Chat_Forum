@@ -1,9 +1,9 @@
 import { Types } from 'mongoose';
-import { verify } from 'jsonwebtoken';
-import Users from '../models/user.model';
-import Posts from '../models/post.model';
-import Comments from '../models/comment.model';
-import Votes from '../models/vote.model';
+import jwt from 'jsonwebtoken';
+import Users from '../models/user.model.js';
+import Posts from '../models/post.model.js';
+import Comments from '../models/comment.model.js';
+import Votes from '../models/vote.model.js';
 
 export const getComments = async (req, res) => {
 	try {
@@ -23,7 +23,7 @@ export const addComment = async (req, res) => {
 		const parentId = Types.ObjectId(req.params.id);
 		// Get user's id
 		const token = req.header('auth-token');
-		const decodedToken = verify(token, process.env.TOKEN_SECRET);
+		const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
 		const creatorId = Types.ObjectId(decodedToken.id);
 		const creatorUsername = await Users.findById(creatorId).username;
 		// Create a new comment
@@ -74,7 +74,7 @@ export const deleteComment = async (req, res) => {
 		const commentId = Types.ObjectId(req.params.id);
 		// Get user's id
 		const token = req.header('auth-token');
-		const decodedToken = verify(token, process.env.TOKEN_SECRET);
+		const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
 		const creatorId = Types.ObjectId(decodedToken.id);
 		// Delete comment and update parent doc and user
 		const deletedComment = await Comments.findByIdAndRemove(commentId);
@@ -92,7 +92,7 @@ export const voteComment = async (req, res) => {
 		const voteType = req.params.type;
 		// Get user's id
 		const token = req.header('auth-token');
-		const decodedToken = verify(token, process.env.TOKEN_SECRET);
+		const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
 		const userId = Types.ObjectId(decodedToken.id);
 		const vote = Votes.findOne({ docId: postId, userId: userId });
 		if (vote) {

@@ -1,23 +1,22 @@
-import express, { json } from 'express';
-import { set, Promise, connect } from 'mongoose';
+import express from 'express';
+import { set, connect } from 'mongoose';
 import { config } from 'dotenv';
 import cors from 'cors';
 
-import authRoute from './routers/auth';
-import userRoute from './routers/user';
-import postRoute from './routers/post';
-import commentRoute from './routers/comment';
+import authRoute from './routers/auth.js';
+import userRoute from './routers/user.js';
+import postRoute from './routers/post.js';
+import commentRoute from './routers/comment.js';
 
 config();
 
 const app = express();
 app.use(cors());
-app.use(json());
+app.use(express.json());
 
 const PORT = process.env.PORT || 8000;
 
 set('strictQuery', true);
-Promise = global.Promise;
 connect(process.env.MONGODB_URI, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,

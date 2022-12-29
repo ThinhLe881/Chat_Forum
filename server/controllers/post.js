@@ -1,8 +1,8 @@
 import { Types } from 'mongoose';
-import { verify } from 'jsonwebtoken';
-import Users from '../models/user.model';
-import Posts from '../models/post.model';
-import Votes from '../models/vote.model';
+import jwt from 'jsonwebtoken';
+import Users from '../models/user.model.js';
+import Posts from '../models/post.model.js';
+import Votes from '../models/vote.model.js';
 
 export const getPosts = async (req, res) => {
 	try {
@@ -17,7 +17,7 @@ export const addPost = async (req, res) => {
 	try {
 		// Get user's id
 		const token = req.header('auth-token');
-		const decodedToken = verify(token, process.env.TOKEN_SECRET);
+		const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
 		const creatorId = Types.ObjectId(decodedToken.id);
 		const creatorUsername = await Users.findById(creatorId).username;
 		// Create a new post
@@ -66,7 +66,7 @@ export const deletePost = async (req, res) => {
 		const postId = Types.ObjectId(req.params.id);
 		// Get user's id
 		const token = req.header('auth-token');
-		const decodedToken = verify(token, process.env.TOKEN_SECRET);
+		const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
 		const creatorId = Types.ObjectId(decodedToken.id);
 		await Posts.findByIdAndRemove(postId);
 		await Users.findByIdAndUpdate({ _id: creatorId }, { $inc: { posts: -1 } });
@@ -82,7 +82,7 @@ export const votePost = async (req, res) => {
 		const voteType = req.params.type;
 		// Get user's id
 		const token = req.header('auth-token');
-		const decodedToken = verify(token, process.env.TOKEN_SECRET);
+		const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
 		const userId = Types.ObjectId(decodedToken.id);
 		const vote = Votes.findOne({ docId: postId, userId: userId });
 		if (vote) {

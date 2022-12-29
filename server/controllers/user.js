@@ -1,8 +1,8 @@
 import { Types } from 'mongoose';
-import { verify } from 'jsonwebtoken';
-import Users from '../models/user.model';
-import Posts from '../models/post.model';
-import Votes from '../models/vote.model';
+import jwt from 'jsonwebtoken';
+import Users from '../models/user.model.js';
+import Posts from '../models/post.model.js';
+import Votes from '../models/vote.model.js';
 
 export const getUser = async (req, res) => {
 	try {
@@ -18,7 +18,7 @@ export const editUser = async (req, res) => {
 	try {
 		// Get user's id
 		const token = req.header('auth-token');
-		const decodedToken = verify(token, process.env.TOKEN_SECRET);
+		const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
 		const userId = Types.ObjectId(decodedToken.id);
 
 		const updatedUser = await Users.findByIdAndUpdate(
@@ -55,7 +55,7 @@ export const getVotedPosts = async (req, res) => {
 		const voteType = req.params.type;
 		// Get user's id
 		const token = req.header('auth-token');
-		const decodedToken = verify(token, process.env.TOKEN_SECRET);
+		const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
 		const userId = Types.ObjectId(decodedToken.id);
 		// Get all up voted posts
 		const postIds = await Votes.find({ userId: userId, voteType: voteType })

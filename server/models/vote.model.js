@@ -1,4 +1,3 @@
-import { boolean } from '@hapi/joi';
 import { Schema, Types, model } from 'mongoose';
 
 const voteSchema = new Schema(
@@ -12,7 +11,7 @@ const voteSchema = new Schema(
 			required: true,
 		},
 		voteType: {
-			type: boolean,
+			type: Boolean,
 			default: null, // true = up vote, false = down vote
 		},
 		date: {

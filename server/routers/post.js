@@ -1,7 +1,8 @@
-import { verifyToken } from '../middleware/auth';
-import { getPosts, addPost, editPost, deletePost, votePost } from '../controllers/post';
+import { verifyToken } from '../middleware/auth.js';
+import { getPosts, addPost, editPost, deletePost, votePost } from '../controllers/post.js';
+import express from 'express';
 
-const router = require('express').Router();
+const router = express.Router();
 
 router.get('/', getPosts);
 router.post('/', verifyToken, addPost);

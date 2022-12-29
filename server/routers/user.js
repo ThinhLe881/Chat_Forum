@@ -1,12 +1,8 @@
-import { verifyToken } from '../middleware/auth';
-import {
-	getUser,
-	editUser,
-	getUserPosts,
-	getVotedPosts,
-} from '../controllers/user';
+import { verifyToken } from '../middleware/auth.js';
+import { getUser, editUser, getUserPosts, getVotedPosts } from '../controllers/user.js';
+import express from 'express';
 
-const router = require('express').Router();
+const router = express.Router();
 
 router.get('/:id', verifyToken, getUser);
 router.patch('/', verifyToken, editUser);
