@@ -9,9 +9,11 @@ export const getComments = async (req, res) => {
 	try {
 		const parentId = Types.ObjectId(req.params.id);
 		// Get comments
-		const comments = await Comments.find({ parentId: parentId }).sort({
-			date: -1,
-		});
+		const comments = await Comments.find({ parentId: parentId })
+			.sort({
+				date: -1,
+			})
+			.limit(20);
 		res.status(200).send(comments);
 	} catch (err) {
 		res.status(400).send(err);
@@ -25,12 +27,13 @@ export const addComment = async (req, res) => {
 		const token = req.header('auth-token');
 		const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
 		const creatorId = Types.ObjectId(decodedToken.id);
-		const creatorUsername = await Users.findById(creatorId).username;
+		const creator = await Users.findById(creatorId).name;
+		const creatorName = creator.name;
 		// Create a new comment
 		const comment = new Comments({
 			creatorId: creatorId,
 			parentId: parentId,
-			creatorName: creatorUsername,
+			creatorName: creatorName,
 			content: req.body.content,
 			image: req.body?.image,
 		});
@@ -55,7 +58,6 @@ export const editComment = async (req, res) => {
 			commentId,
 			{
 				content: req.body.content,
-				title: req.body.title,
 				image: req.body.image,
 			},
 			{ new: true }

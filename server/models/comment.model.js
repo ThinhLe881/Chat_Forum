@@ -12,10 +12,7 @@ const commentSchema = new Schema(
 		},
 		creatorName: {
 			type: String,
-			require: true,
-		},
-		title: {
-			type: String,
+			required: true,
 		},
 		content: {
 			type: String,

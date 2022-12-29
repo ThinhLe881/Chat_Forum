@@ -6,7 +6,7 @@ import Votes from '../models/vote.model.js';
 
 export const getPosts = async (req, res) => {
 	try {
-		const posts = await Posts.find().sort({ date: -1 }).limit(20).toArray();
+		const posts = await Posts.find().sort({ date: -1 }).limit(20);
 		res.status(200).send(posts);
 	} catch (err) {
 		res.status(400).send(err);
@@ -18,14 +18,15 @@ export const addPost = async (req, res) => {
 		// Get user's id
 		const token = req.header('auth-token');
 		const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
-		const creatorId = Types.ObjectId(decodedToken.id);
-		const creatorUsername = await Users.findById(creatorId).username;
+		const creatorId = decodedToken.id;
+		const creator = await Users.findById(creatorId);
+		const creatorName = creator.name;
 		// Create a new post
 		const post = new Posts({
 			creatorId: creatorId,
-			creatorName: creatorUsername,
-			content: req.body.content,
+			creatorName: creatorName,
 			title: req.body.title,
+			content: req.body.content,
 			image: req.body?.image,
 		});
 		const newPost = await post.save();

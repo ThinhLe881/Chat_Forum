@@ -8,10 +8,11 @@ const postSchema = new Schema(
 		},
 		creatorName: {
 			type: String,
-			require: true,
+			required: true,
 		},
 		title: {
 			type: String,
+			required: true,
 		},
 		content: {
 			type: String,
