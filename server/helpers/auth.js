@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import Joi from '@hapi/joi';
 
 export const registerValidation = (data) => {
@@ -16,17 +15,4 @@ export const loginValidation = (data) => {
 		password: Joi.string().min(6).max(30).required(),
 	});
 	return schema.validate(data);
-};
-
-export const verifyToken = function (req, res, next) {
-	const token = req.header('auth-token');
-	if (!token) {
-		return res.status(401).send('Access denied');
-	}
-	try {
-		req.user = jwt.verify(token, process.env.TOKEN_SECRET);
-		next();
-	} catch (err) {
-		res.status(400).send('Invalid token');
-	}
 };

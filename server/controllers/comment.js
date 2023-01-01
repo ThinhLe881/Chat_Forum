@@ -1,5 +1,6 @@
-import { Types } from 'mongoose';
-import jwt from 'jsonwebtoken';
+import { Types, startSession } from 'mongoose';
+import { transactionOptions } from '../helpers/transactionOptions.js';
+import { getUserId } from '../helpers/user.js';
 import Users from '../models/user.model.js';
 import Posts from '../models/post.model.js';
 import Comments from '../models/comment.model.js';
@@ -9,99 +10,204 @@ export const getComments = async (req, res) => {
 	try {
 		const parentId = Types.ObjectId(req.params.id);
 		// Get comments
-		const comments = await Comments.find({ parentId: parentId })
-			.sort({
-				date: -1,
-			})
-			.limit(20);
+		const comments = await Comments.find({ parentId: parentId }).sort({
+			date: -1,
+		});
 		res.status(200).send(comments);
 	} catch (err) {
-		res.status(400).send(err);
+		console.log(err);
+		res.status(500).send(err);
 	}
 };
 
 export const addComment = async (req, res) => {
+	const session = await startSession();
 	try {
-		const parentId = Types.ObjectId(req.params.id);
-		// Get user's id
-		const token = req.header('auth-token');
-		const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
-		const creatorId = Types.ObjectId(decodedToken.id);
-		const creator = await Users.findById(creatorId).name;
+		session.startTransaction(transactionOptions);
+		const creatorId = getUserId(req);
+		const creator = await Users.findById(creatorId);
 		const creatorName = creator.name;
+		const parentId = Types.ObjectId(req.params.id);
 		// Create a new comment
-		const comment = new Comments({
-			creatorId: creatorId,
+		const newComment = new Comments({
+			postId: parentId,
 			parentId: parentId,
+			creatorId: creatorId,
 			creatorName: creatorName,
 			content: req.body.content,
-			image: req.body?.image,
 		});
-		// Save the comment and update the parent post
-		const newComment = await comment.save();
-		await Posts.findByIdAndUpdate({ _id: parentId }, { $inc: { comments: 1 } });
-		await Users.findByIdAndUpdate({ _id: creatorId }, { $inc: { comments: 1 } });
+		// Insert the comment and update the parent post and user
+		await newComment.save({ session });
+		await Posts.updateOne({ _id: parentId }, { $inc: { comments: 1 } }, { session });
+		await Users.updateOne({ _id: creatorId }, { $inc: { comments: 1 } }, { session });
 		res.status(201).send({
-			post: newComment,
+			comment: newComment,
 			msg: 'Comment added successfully',
 		});
+		await session.commitTransaction();
 	} catch (err) {
-		res.status(400).send(err);
+		console.log(err);
+		res.status(500).send(err);
+		await session.abortTransaction();
+	} finally {
+		await session.endSession();
+	}
+};
+
+export const addChildComment = async (req, res) => {
+	const session = await startSession();
+	try {
+		session.startTransaction(transactionOptions);
+		const creatorId = getUserId(req);
+		const creator = await Users.findById(creatorId);
+		const creatorName = creator.name;
+		const parentId = Types.ObjectId(req.params.id);
+		// Update the parent comment
+		const parentComment = await Comments.findByIdAndUpdate(
+			parentId,
+			{ $inc: { comments: 1 } },
+			{ session }
+		);
+		// Create a new comment
+		const newComment = new Comments({
+			postId: parentComment.postId,
+			parentId: parentId,
+			creatorId: creatorId,
+			creatorName: creatorName,
+			content: req.body.content,
+		});
+		// Save the comment and update the user
+		await newComment.save({ session });
+		await Users.updateOne({ _id: creatorId }, { $inc: { comments: 1 } }, { session });
+		res.status(201).send({
+			comment: newComment,
+			msg: 'Comment added successfully',
+		});
+		await session.commitTransaction();
+	} catch (err) {
+		console.log(err);
+		res.status(500).send(err);
+		await session.abortTransaction();
+	} finally {
+		await session.endSession();
 	}
 };
 
 export const editComment = async (req, res) => {
 	try {
+		const creatorId = getUserId(req);
 		const commentId = Types.ObjectId(req.params.id);
 		// Update comment
-		const updatedComment = await Comments.findByIdAndUpdate(
-			commentId,
+		const updatedComment = await Comments.findOneAndUpdate(
+			{ _id: commentId, creatorId: creatorId },
 			{
 				content: req.body.content,
-				image: req.body.image,
-			},
-			{ new: true }
+			}
 		);
 		res.status(200).send({
-			post: updatedComment,
+			comment: updatedComment,
 			msg: 'Updated successfully',
 		});
 	} catch (err) {
-		res.status(400).send(err);
+		console.log(err);
+		res.status(500).send(err);
 	}
 };
 
 export const deleteComment = async (req, res) => {
+	const session = await startSession();
 	try {
+		session.startTransaction(transactionOptions);
+		const creatorId = getUserId(req);
 		const commentId = Types.ObjectId(req.params.id);
-		// Get user's id
-		const token = req.header('auth-token');
-		const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
-		const creatorId = Types.ObjectId(decodedToken.id);
 		// Delete comment and update parent doc and user
-		const deletedComment = await Comments.findByIdAndRemove(commentId);
-		await Posts.findByIdAndUpdate({ _id: deletedComment.parentId }, { $inc: { comments: -1 } });
-		await Users.findByIdAndUpdate({ _id: creatorId }, { $inc: { comments: -1 } });
-		res.status(200).send('Deleted successfully');
+		const deletedComment = await Comments.findOneAndDelete(
+			{
+				_id: commentId,
+				creatorId: creatorId,
+			},
+			{ session }
+		);
+		await Posts.updateOne(
+			{ _id: deletedComment.parentId },
+			{ $inc: { comments: -1 } },
+			{ session }
+		);
+		await Users.updateOne(
+			{ _id: creatorId },
+			{ $inc: { comments: -1, votes: -deleteComment.votes } },
+			{ session }
+		);
+		res.status(200).send({
+			comment: deletedComment,
+			msg: 'Deleted successfully',
+		});
+		await session.commitTransaction();
 	} catch (err) {
-		res.status(400).send(err);
+		console.log(err);
+		res.status(500).send(err);
+		await session.abortTransaction();
+	} finally {
+		await session.endSession();
+	}
+};
+
+export const deleteChildComment = async (req, res) => {
+	const session = await startSession();
+	try {
+		session.startTransaction(transactionOptions);
+		const commentId = Types.ObjectId(req.params.id);
+		const creatorId = getUserId(req);
+		// Delete comment and update parent doc and user
+		const deletedComment = await Comments.findOneAndDelete(
+			{
+				_id: commentId,
+				creatorId: creatorId,
+			},
+			{ session }
+		);
+		await Comments.updateOne(
+			{ _id: deletedComment.parentId },
+			{ $inc: { comments: -1 } },
+			{ session }
+		);
+		await Users.updateOne(
+			{ _id: creatorId },
+			{ $inc: { comments: -1, votes: -deleteComment.votes } },
+			{ session }
+		);
+		res.status(200).send({
+			comment: deletedComment,
+			msg: 'Deleted successfully',
+		});
+		await session.commitTransaction();
+	} catch (err) {
+		console.log(err);
+		res.status(500).send(err);
+		await session.abortTransaction();
+	} finally {
+		await session.endSession();
 	}
 };
 
 export const voteComment = async (req, res) => {
+	const session = await startSession();
 	try {
+		session.startTransaction(transactionOptions);
+		const userId = getUserId(req);
 		const commentId = Types.ObjectId(req.params.id);
 		const voteType = req.params.type;
-		// Get user's id
-		const token = req.header('auth-token');
-		const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
-		const userId = Types.ObjectId(decodedToken.id);
 		const vote = Votes.findOne({ docId: postId, userId: userId });
+		let updatedComment;
 		if (vote) {
 			// Remove vote if already voted
-			await Votes.findByIdAndRemove(vote._id);
+			await Votes.deleteOne({ _id: vote._id }, { session });
 			// Update votes
-			await Comments.findByIdAndUpdate({ _id: commentId }, { $inc: { votes: -1 } });
+			updatedComment = await Comments.findByIdAndUpdate(
+				commentId,
+				{ $inc: { votes: -1 } },
+				{ session }
+			);
 		} else {
 			// Create new vote
 			const newVote = new Votes({
@@ -109,14 +215,24 @@ export const voteComment = async (req, res) => {
 				userId: userId,
 				voteType: voteType,
 			});
-			await newVote.save();
+			await newVote.save({ session });
 			// Update votes
-			await Comments.findByIdAndUpdate({ _id: commentId }, { $inc: { votes: 1 } });
+			updatedComment = await Comments.findByIdAndUpdate(
+				commentId,
+				{ $inc: { votes: 1 } },
+				{ session }
+			);
 		}
 		res.status(200).send({
+			comment: updatedComment,
 			msg: 'Updated votes successfully',
 		});
+		await session.commitTransaction();
 	} catch (err) {
-		res.status(400).send(err);
+		console.log(err);
+		res.status(500).send(err);
+		await session.abortTransaction();
+	} finally {
+		await session.endSession();
 	}
 };

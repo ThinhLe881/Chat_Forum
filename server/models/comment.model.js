@@ -2,13 +2,17 @@ import { Schema, Types, model } from 'mongoose';
 
 const commentSchema = new Schema(
 	{
-		creatorId: {
+		postId: {
 			type: Types.ObjectId,
 			required: true,
 		},
 		parentId: {
 			type: Types.ObjectId,
-			default: null,
+			required: true,
+		},
+		creatorId: {
+			type: Types.ObjectId,
+			required: true,
 		},
 		creatorName: {
 			type: String,
@@ -18,7 +22,7 @@ const commentSchema = new Schema(
 			type: String,
 			required: true,
 		},
-		image: { type: String, required: false },
+		// image: { type: String, required: false },
 		votes: {
 			type: Number,
 			default: 0,

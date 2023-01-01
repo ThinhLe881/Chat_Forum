@@ -1,40 +1,59 @@
-import { Types } from 'mongoose';
-import jwt from 'jsonwebtoken';
+import { Types, startSession } from 'mongoose';
+import { transactionOptions } from '../helpers/transactionOptions.js';
+import { getUserId } from '../helpers/user.js';
 import Users from '../models/user.model.js';
 import Posts from '../models/post.model.js';
+import Comments from '../models/comment.model.js';
 import Votes from '../models/vote.model.js';
 
 export const getUser = async (req, res) => {
 	try {
 		const userId = Types.ObjectId(req.params.id);
-		const user = await Users.findById(userId);
+		const user = await Users.findById(userId, { password: 0 });
 		return res.status(200).send({ user });
 	} catch (err) {
-		res.status(400).send(err);
+		console.log(err);
+		res.status(500).send(err);
 	}
 };
 
 export const editUser = async (req, res) => {
+	const session = await startSession();
 	try {
-		// Get user's id
-		const token = req.header('auth-token');
-		const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
-		const userId = Types.ObjectId(decodedToken.id);
-
+		session.startTransaction(transactionOptions);
+		const userId = getUserId(req);
 		const updatedUser = await Users.findByIdAndUpdate(
 			userId,
 			{
 				name: req.body.name,
 				email: req.body.email,
 			},
-			{ new: true }
+			{ new: true },
+			{ session }
 		);
+		if (req.body.name) {
+			await Posts.updateMany(
+				{ creatorId: userId },
+				{ creatorName: req.body.name },
+				{ session }
+			);
+			await Comments.updateMany(
+				{ creatorId: userId },
+				{ creatorName: req.body.name },
+				{ session }
+			);
+		}
 		res.status(200).send({
 			user: updatedUser,
 			msg: 'Updated successfully',
 		});
+		await session.commitTransaction();
 	} catch (err) {
-		res.status(400).send(err);
+		console.log(err);
+		res.status(500).send(err);
+		await session.abortTransaction();
+	} finally {
+		await session.endSession();
 	}
 };
 
@@ -46,17 +65,15 @@ export const getUserPosts = async (req, res) => {
 		});
 		res.status(200).send(posts);
 	} catch (err) {
-		res.status(400).send(err);
+		console.log(err);
+		res.status(500).send(err);
 	}
 };
 
 export const getVotedPosts = async (req, res) => {
 	try {
 		const voteType = req.params.type;
-		// Get user's id
-		const token = req.header('auth-token');
-		const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
-		const userId = Types.ObjectId(decodedToken.id);
+		const userId = getUserId(req);
 		// Get all up voted posts
 		const postIds = await Votes.find({ userId: userId, voteType: voteType })
 			.map((x) => x.postId)
@@ -64,11 +81,11 @@ export const getVotedPosts = async (req, res) => {
 		const posts = await Posts.find({ _id: { $in: postIds } }).sort({
 			date: -1,
 		});
-
 		return res.status(200).send({
 			posts: posts,
 		});
 	} catch (err) {
-		res.status(400).send(err);
+		console.log(err);
+		res.status(500).send(err);
 	}
 };

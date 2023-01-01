@@ -1,4 +1,4 @@
-import { verifyToken } from '../middleware/auth.js';
+import { verifyToken } from '../middlewares/auth.js';
 import { getUser, editUser, getUserPosts, getVotedPosts } from '../controllers/user.js';
 import express from 'express';
 

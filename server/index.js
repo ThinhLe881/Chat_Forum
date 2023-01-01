@@ -7,12 +7,13 @@ import authRoute from './routers/auth.js';
 import userRoute from './routers/user.js';
 import postRoute from './routers/post.js';
 import commentRoute from './routers/comment.js';
-
-config();
+import topicRoute from './routers/topic.js';
+import voteRoute from './routers/vote.js';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+config();
 
 const PORT = process.env.PORT || 8000;
 
@@ -34,5 +35,7 @@ app.use('/auth', authRoute);
 app.use('/users', userRoute);
 app.use('/posts', postRoute);
 app.use('/comments', commentRoute);
+app.use('/topics', topicRoute);
+app.use('/votes', voteRoute);
 
 app.listen(PORT, () => console.log(`Server is running on port: ${PORT}`));

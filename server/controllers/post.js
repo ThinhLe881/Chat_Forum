@@ -1,55 +1,63 @@
-import { Types } from 'mongoose';
-import jwt from 'jsonwebtoken';
+import { Types, startSession } from 'mongoose';
+import { transactionOptions } from '../helpers/transactionOptions.js';
+import { getUserId } from '../helpers/user.js';
 import Users from '../models/user.model.js';
 import Posts from '../models/post.model.js';
+import Comments from '../models/comment.model.js';
 import Votes from '../models/vote.model.js';
 
 export const getPosts = async (req, res) => {
 	try {
-		const posts = await Posts.find().sort({ date: -1 }).limit(20);
+		const posts = await Posts.find().sort({ date: -1 });
 		res.status(200).send(posts);
 	} catch (err) {
-		res.status(400).send(err);
+		console.log(err);
+		res.status(500).send(err);
 	}
 };
 
 export const addPost = async (req, res) => {
+	const session = await startSession();
 	try {
-		// Get user's id
-		const token = req.header('auth-token');
-		const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
-		const creatorId = decodedToken.id;
+		session.startTransaction(transactionOptions);
+		const creatorId = getUserId(req);
 		const creator = await Users.findById(creatorId);
 		const creatorName = creator.name;
 		// Create a new post
-		const post = new Posts({
+		const newPost = new Posts({
 			creatorId: creatorId,
 			creatorName: creatorName,
+			topic: req.body.topic,
 			title: req.body.title,
 			content: req.body.content,
-			image: req.body?.image,
 		});
-		const newPost = await post.save();
-		await Users.findByIdAndUpdate({ _id: creatorId }, { $inc: { posts: 1 } });
+		// Insert the post and update the user
+		await newPost.save({ session });
+		await Users.updateOne({ _id: creatorId }, { $inc: { posts: 1 } }, { session });
 		res.status(201).send({
 			post: newPost,
 			msg: 'Post added successfully',
 		});
+		await session.commitTransaction();
 	} catch (err) {
-		res.status(400).send(err);
+		console.log(err);
+		res.status(500).send(err);
+		await session.abortTransaction();
+	} finally {
+		await session.endSession();
 	}
 };
 
 export const editPost = async (req, res) => {
 	try {
+		const creatorId = getUserId(req);
 		const postId = Types.ObjectId(req.params.id);
 		// Update post
-		const updatedPost = await Posts.findByIdAndUpdate(
-			postId,
+		const updatedPost = await Posts.findOneAndUpdate(
+			{ _id: postId, creatorId: creatorId },
 			{
 				content: req.body.content,
 				title: req.body.title,
-				image: req.body.image,
 			},
 			{ new: true }
 		);
@@ -58,39 +66,59 @@ export const editPost = async (req, res) => {
 			msg: 'Updated successfully',
 		});
 	} catch (err) {
-		res.status(400).send(err);
+		console.log(err);
+		res.status(500).send(err);
 	}
 };
 
 export const deletePost = async (req, res) => {
+	const session = await startSession();
 	try {
+		session.startTransaction(transactionOptions);
+		const creatorId = getUserId(req);
 		const postId = Types.ObjectId(req.params.id);
-		// Get user's id
-		const token = req.header('auth-token');
-		const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
-		const creatorId = Types.ObjectId(decodedToken.id);
-		await Posts.findByIdAndRemove(postId);
-		await Users.findByIdAndUpdate({ _id: creatorId }, { $inc: { posts: -1 } });
-		res.status(200).send('Deleted successfully');
+		const deletedPost = await Posts.findOneAndDelete(
+			{ _id: postId, creatorId: creatorId },
+			{ session }
+		);
+		await Comments.deleteMany({ postId: postId }, { session });
+		await Users.updateOne(
+			{ _id: creatorId },
+			{ $inc: { posts: -1, votes: -deletedPost.votes } },
+			{ session }
+		);
+		res.status(200).send({
+			post: deletedPost,
+			msg: 'Deleted successfully',
+		});
+		await session.commitTransaction();
 	} catch (err) {
-		res.status(400).send(err);
+		console.log(err);
+		res.status(500).send(err);
+		await session.abortTransaction();
+	} finally {
+		await session.endSession();
 	}
 };
 
 export const votePost = async (req, res) => {
+	const session = await startSession();
 	try {
+		session.startTransaction(transactionOptions);
+		const userId = getUserId(req);
 		const postId = Types.ObjectId(req.params.id);
 		const voteType = req.params.type;
-		// Get user's id
-		const token = req.header('auth-token');
-		const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
-		const userId = Types.ObjectId(decodedToken.id);
 		const vote = Votes.findOne({ docId: postId, userId: userId });
+		let updatedPost;
 		if (vote) {
 			// Remove vote if already voted
-			await Votes.findByIdAndRemove(vote._id);
+			await Votes.deleteOne({ _id: vote._id }, { session });
 			// Update votes
-			await Posts.findByIdAndUpdate({ _id: postId }, { $inc: { votes: -1 } });
+			updatedPost = await Posts.findByIdAndUpdate(
+				postId,
+				{ $inc: { votes: -1 } },
+				{ session }
+			);
 		} else {
 			// Create new vote
 			const newVote = new Votes({
@@ -98,14 +126,24 @@ export const votePost = async (req, res) => {
 				userId: userId,
 				voteType: voteType,
 			});
-			await newVote.save();
+			await newVote.save({ session });
 			// Update votes
-			await Posts.findByIdAndUpdate({ _id: postId }, { $inc: { votes: 1 } });
+			updatedPost = await Posts.findByIdAndUpdate(
+				postId,
+				{ $inc: { votes: 1 } },
+				{ session }
+			);
 		}
 		res.status(200).send({
+			post: updatedPost,
 			msg: 'Updated votes successfully',
 		});
+		await session.commitTransaction();
 	} catch (err) {
-		res.status(400).send(err);
+		console.log(err);
+		res.status(500).send(err);
+		await session.abortTransaction();
+	} finally {
+		await session.endSession();
 	}
 };

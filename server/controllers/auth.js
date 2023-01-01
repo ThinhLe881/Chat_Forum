@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { registerValidation, loginValidation } from '../middleware/auth.js';
+import { registerValidation, loginValidation } from '../helpers/auth.js';
 import Users from '../models/user.model.js';
 
 function error_message_format(mes) {
@@ -22,15 +22,16 @@ export const register = async (req, res) => {
 		const salt = await bcrypt.genSalt(10);
 		const hashPassword = await bcrypt.hash(req.body.password, salt);
 		// Create a new user
-		const user = new Users({
+		const newUser = new Users({
 			name: req.body.name,
 			email: req.body.email,
 			password: hashPassword,
 		});
-		await user.save();
+		await newUser.save();
 		res.status(201).send('Registered successfully');
 	} catch (err) {
-		res.status(400).send(err);
+		console.log(err);
+		res.status(500).send(err);
 	}
 };
 
@@ -50,7 +51,8 @@ export const login = async (req, res) => {
 			return res.status(400).send('Invalid password');
 		}
 		// Create JWT token
-		const token = jwt.sign({ id: user._id }, process.env.TOKEN_SECRET);
+		const token = jwt.sign({ id: user._id }, process.env.TOKEN_SECRET, { expiresIn: '365d' }); // set long expirey time for easy testing
+
 		res.header('auth-token', token).status(200).send({
 			token: token,
 			id: user._id,
@@ -59,6 +61,7 @@ export const login = async (req, res) => {
 			msg: 'Logged in successfully',
 		});
 	} catch (err) {
-		res.status(400).send(err);
+		console.log(err);
+		res.status(500).send(err);
 	}
 };

@@ -10,6 +10,10 @@ const postSchema = new Schema(
 			type: String,
 			required: true,
 		},
+		topic: {
+			type: String,
+			required: true,
+		},
 		title: {
 			type: String,
 			required: true,
@@ -18,7 +22,7 @@ const postSchema = new Schema(
 			type: String,
 			required: true,
 		},
-		image: { type: String, required: false },
+		// image: { type: String, required: false },
 		votes: {
 			type: Number,
 			default: 0,

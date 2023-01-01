@@ -30,12 +30,8 @@ const userSchema = new Schema(
 			type: Number,
 			default: 0,
 		},
-		// how many upvotes and downvotes the user has received
-		upVotes: {
-			type: Number,
-			default: 0,
-		},
-		downVotes: {
+		// how many votes the user has received
+		votes: {
 			type: Number,
 			default: 0,
 		},
