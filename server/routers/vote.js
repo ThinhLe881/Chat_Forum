@@ -1,9 +1,9 @@
-import { verifyToken } from '../middlewares/auth.js';
+import { verifyAdmin } from '../middlewares/auth.js';
 import { deleteVotes } from '../controllers/vote.js';
 import express from 'express';
 
 const router = express.Router();
 
-router.delete('/', verifyToken, deleteVotes);
+router.delete('/', verifyAdmin, deleteVotes);
 
 export default router;

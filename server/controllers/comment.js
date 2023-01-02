@@ -133,8 +133,9 @@ export const deleteComment = async (req, res) => {
 			},
 			{ session }
 		);
+		await Comments.deleteMany({ parentId: commentId }, { session });
 		await Posts.updateOne(
-			{ _id: deletedComment.parentId },
+			{ _id: deletedComment.postId },
 			{ $inc: { comments: -1 } },
 			{ session }
 		);
@@ -171,6 +172,7 @@ export const deleteChildComment = async (req, res) => {
 			},
 			{ session }
 		);
+		await Comments.deleteMany({ parentId: commentId }, { session });
 		await Comments.updateOne(
 			{ _id: deletedComment.parentId },
 			{ $inc: { comments: -1 } },
@@ -232,7 +234,7 @@ export const voteComment = async (req, res) => {
 					{ voteType: voteType },
 					{ session }
 				);
-				numVotes = voteType ? 2 : -2;
+				numVotes = voteType ? -2 : 2;
 				break;
 			default:
 				break;

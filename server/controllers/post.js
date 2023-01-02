@@ -111,8 +111,8 @@ export const votePost = async (req, res) => {
 		session.startTransaction(transactionOptions);
 		const userId = getUserId(req);
 		const postId = Types.ObjectId(req.params.id);
-		const voteType = req.params.type === 'true';
 		const option = req.params.option;
+		const voteType = req.params.type === 'true';
 		const post = await Posts.findById(postId, null, { session });
 		const creatorId = post.creatorId;
 		let numVotes;
@@ -142,7 +142,7 @@ export const votePost = async (req, res) => {
 					{ voteType: voteType },
 					{ session }
 				);
-				numVotes = voteType ? 2 : -2;
+				numVotes = voteType ? -2 : 2;
 				break;
 			default:
 				break;
