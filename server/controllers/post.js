@@ -21,8 +21,7 @@ export const addPost = async (req, res) => {
 	try {
 		session.startTransaction(transactionOptions);
 		const creatorId = getUserId(req);
-		const creator = await Users.findById(creatorId, null, { session });
-		const creatorName = creator.name;
+		const creatorName = (await Users.findById(creatorId, null, { session })).name;
 		// Create a new post
 		const newPost = new Posts(
 			{

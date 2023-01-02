@@ -28,8 +28,7 @@ export const editUser = async (req, res) => {
 				name: req.body.name,
 				email: req.body.email,
 			},
-			{ new: true },
-			{ session }
+			{ session: session, new: true }
 		);
 		if (req.body.name) {
 			await Posts.updateMany(

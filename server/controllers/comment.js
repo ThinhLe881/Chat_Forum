@@ -4,6 +4,7 @@ import { getUserId } from '../helpers/user.js';
 import Users from '../models/user.model.js';
 import Posts from '../models/post.model.js';
 import Comments from '../models/comment.model.js';
+import Votes from '../models/vote.model.js';
 
 export const getComments = async (req, res) => {
 	try {
@@ -24,8 +25,7 @@ export const addComment = async (req, res) => {
 	try {
 		session.startTransaction(transactionOptions);
 		const creatorId = getUserId(req);
-		const creator = await Users.findById(creatorId, null, { session });
-		const creatorName = creator.name;
+		const creatorName = (await Users.findById(creatorId, null, { session })).name;
 		const parentId = Types.ObjectId(req.params.id);
 		// Create a new comment
 		const newComment = new Comments(
@@ -61,8 +61,7 @@ export const addChildComment = async (req, res) => {
 	try {
 		session.startTransaction(transactionOptions);
 		const creatorId = getUserId(req);
-		const creator = await Users.findById(creatorId, null, { session });
-		const creatorName = creator.name;
+		const creatorName = (await Users.findById(creatorId, null, { session })).name;
 		const parentId = Types.ObjectId(req.params.id);
 		// Update the parent comment
 		const parentComment = await Comments.findByIdAndUpdate(
