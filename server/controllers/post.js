@@ -21,17 +21,20 @@ export const addPost = async (req, res) => {
 	try {
 		session.startTransaction(transactionOptions);
 		const creatorId = getUserId(req);
-		const creator = await Users.findById(creatorId);
+		const creator = await Users.findById(creatorId, null, { session });
 		const creatorName = creator.name;
 		// Create a new post
-		const newPost = new Posts({
-			creatorId: creatorId,
-			creatorName: creatorName,
-			topic: req.body.topic,
-			title: req.body.title,
-			content: req.body.content,
-		});
-		// Insert the post and update the user
+		const newPost = new Posts(
+			{
+				creatorId: creatorId,
+				creatorName: creatorName,
+				topic: req.body.topic,
+				title: req.body.title,
+				content: req.body.content,
+			},
+			{ session }
+		);
+		// Insert the post and update the creator info
 		await newPost.save({ session });
 		await Users.updateOne({ _id: creatorId }, { $inc: { posts: 1 } }, { session });
 		res.status(201).send({
@@ -56,8 +59,8 @@ export const editPost = async (req, res) => {
 		const updatedPost = await Posts.findOneAndUpdate(
 			{ _id: postId, creatorId: creatorId },
 			{
-				content: req.body.content,
 				title: req.body.title,
+				content: req.body.content,
 			},
 			{ new: true }
 		);
@@ -77,11 +80,13 @@ export const deletePost = async (req, res) => {
 		session.startTransaction(transactionOptions);
 		const creatorId = getUserId(req);
 		const postId = Types.ObjectId(req.params.id);
+		// Delete the post and its comments
 		const deletedPost = await Posts.findOneAndDelete(
 			{ _id: postId, creatorId: creatorId },
 			{ session }
 		);
 		await Comments.deleteMany({ postId: postId }, { session });
+		// Update the creator info
 		await Users.updateOne(
 			{ _id: creatorId },
 			{ $inc: { posts: -1, votes: -deletedPost.votes } },
@@ -107,33 +112,50 @@ export const votePost = async (req, res) => {
 		session.startTransaction(transactionOptions);
 		const userId = getUserId(req);
 		const postId = Types.ObjectId(req.params.id);
-		const voteType = req.params.type;
-		const vote = Votes.findOne({ docId: postId, userId: userId });
-		let updatedPost;
-		if (vote) {
-			// Remove vote if already voted
-			await Votes.deleteOne({ _id: vote._id }, { session });
-			// Update votes
-			updatedPost = await Posts.findByIdAndUpdate(
-				postId,
-				{ $inc: { votes: -1 } },
-				{ session }
-			);
-		} else {
-			// Create new vote
-			const newVote = new Votes({
-				docId: postId,
-				userId: userId,
-				voteType: voteType,
-			});
-			await newVote.save({ session });
-			// Update votes
-			updatedPost = await Posts.findByIdAndUpdate(
-				postId,
-				{ $inc: { votes: 1 } },
-				{ session }
-			);
+		const voteType = req.params.type === 'true';
+		const option = req.params.option;
+		const post = await Posts.findById(postId, null, { session });
+		const creatorId = post.creatorId;
+		let numVotes;
+		switch (option) {
+			case '0': // New vote
+				// Create new vote
+				const newVote = new Votes(
+					{
+						docId: postId,
+						userId: userId,
+						voteType: voteType,
+					},
+					{ session }
+				);
+				await newVote.save({ session });
+				numVotes = voteType ? 1 : -1;
+				break;
+			case '1': // Undo vote
+				// Delete existed vote
+				await Votes.deleteOne({ docId: postId, userId: userId }, { session });
+				numVotes = voteType ? -1 : 1;
+				break;
+			case '2': // Add a opposite sign vote
+				// Update existed vote
+				await Votes.updateOne(
+					{ docId: postId, userId: userId },
+					{ voteType: voteType },
+					{ session }
+				);
+				numVotes = voteType ? 2 : -2;
+				break;
+			default:
+				break;
 		}
+		// Update the votes of the post
+		const updatedPost = await Posts.findByIdAndUpdate(
+			postId,
+			{ $inc: { votes: numVotes } },
+			{ session: session, new: true }
+		);
+		// Update the votes for the post's creator
+		await Users.updateOne({ _id: creatorId }, { $inc: { votes: numVotes } }, { session });
 		res.status(200).send({
 			post: updatedPost,
 			msg: 'Updated votes successfully',

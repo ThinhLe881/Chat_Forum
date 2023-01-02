@@ -4,7 +4,6 @@ import { getUserId } from '../helpers/user.js';
 import Users from '../models/user.model.js';
 import Posts from '../models/post.model.js';
 import Comments from '../models/comment.model.js';
-import Votes from '../models/vote.model.js';
 
 export const getComments = async (req, res) => {
 	try {
@@ -25,17 +24,20 @@ export const addComment = async (req, res) => {
 	try {
 		session.startTransaction(transactionOptions);
 		const creatorId = getUserId(req);
-		const creator = await Users.findById(creatorId);
+		const creator = await Users.findById(creatorId, null, { session });
 		const creatorName = creator.name;
 		const parentId = Types.ObjectId(req.params.id);
 		// Create a new comment
-		const newComment = new Comments({
-			postId: parentId,
-			parentId: parentId,
-			creatorId: creatorId,
-			creatorName: creatorName,
-			content: req.body.content,
-		});
+		const newComment = new Comments(
+			{
+				postId: parentId,
+				parentId: parentId,
+				creatorId: creatorId,
+				creatorName: creatorName,
+				content: req.body.content,
+			},
+			{ session }
+		);
 		// Insert the comment and update the parent post and user
 		await newComment.save({ session });
 		await Posts.updateOne({ _id: parentId }, { $inc: { comments: 1 } }, { session });
@@ -59,7 +61,7 @@ export const addChildComment = async (req, res) => {
 	try {
 		session.startTransaction(transactionOptions);
 		const creatorId = getUserId(req);
-		const creator = await Users.findById(creatorId);
+		const creator = await Users.findById(creatorId, null, { session });
 		const creatorName = creator.name;
 		const parentId = Types.ObjectId(req.params.id);
 		// Update the parent comment
@@ -69,13 +71,16 @@ export const addChildComment = async (req, res) => {
 			{ session }
 		);
 		// Create a new comment
-		const newComment = new Comments({
-			postId: parentComment.postId,
-			parentId: parentId,
-			creatorId: creatorId,
-			creatorName: creatorName,
-			content: req.body.content,
-		});
+		const newComment = new Comments(
+			{
+				postId: parentComment.postId,
+				parentId: parentId,
+				creatorId: creatorId,
+				creatorName: creatorName,
+				content: req.body.content,
+			},
+			{ session }
+		);
 		// Save the comment and update the user
 		await newComment.save({ session });
 		await Users.updateOne({ _id: creatorId }, { $inc: { comments: 1 } }, { session });
@@ -102,7 +107,8 @@ export const editComment = async (req, res) => {
 			{ _id: commentId, creatorId: creatorId },
 			{
 				content: req.body.content,
-			}
+			},
+			{ new: true }
 		);
 		res.status(200).send({
 			comment: updatedComment,
@@ -135,7 +141,7 @@ export const deleteComment = async (req, res) => {
 		);
 		await Users.updateOne(
 			{ _id: creatorId },
-			{ $inc: { comments: -1, votes: -deleteComment.votes } },
+			{ $inc: { comments: -1, votes: -deletedComment.votes } },
 			{ session }
 		);
 		res.status(200).send({
@@ -173,7 +179,7 @@ export const deleteChildComment = async (req, res) => {
 		);
 		await Users.updateOne(
 			{ _id: creatorId },
-			{ $inc: { comments: -1, votes: -deleteComment.votes } },
+			{ $inc: { comments: -1, votes: -deletedComment.votes } },
 			{ session }
 		);
 		res.status(200).send({
@@ -196,33 +202,50 @@ export const voteComment = async (req, res) => {
 		session.startTransaction(transactionOptions);
 		const userId = getUserId(req);
 		const commentId = Types.ObjectId(req.params.id);
-		const voteType = req.params.type;
-		const vote = Votes.findOne({ docId: postId, userId: userId });
-		let updatedComment;
-		if (vote) {
-			// Remove vote if already voted
-			await Votes.deleteOne({ _id: vote._id }, { session });
-			// Update votes
-			updatedComment = await Comments.findByIdAndUpdate(
-				commentId,
-				{ $inc: { votes: -1 } },
-				{ session }
-			);
-		} else {
-			// Create new vote
-			const newVote = new Votes({
-				docId: commentId,
-				userId: userId,
-				voteType: voteType,
-			});
-			await newVote.save({ session });
-			// Update votes
-			updatedComment = await Comments.findByIdAndUpdate(
-				commentId,
-				{ $inc: { votes: 1 } },
-				{ session }
-			);
+		const voteType = req.params.type === 'true';
+		const option = req.params.option;
+		const post = await Comments.findById(commentId, null, { session });
+		const creatorId = post.creatorId;
+		let numVotes;
+		switch (option) {
+			case '0': // New vote
+				// Create new vote
+				const newVote = new Votes(
+					{
+						docId: commentId,
+						userId: userId,
+						voteType: voteType,
+					},
+					{ session }
+				);
+				await newVote.save({ session });
+				numVotes = voteType ? 1 : -1;
+				break;
+			case '1': // Undo vote
+				// Delete existed vote
+				await Votes.deleteOne({ docId: commentId, userId: userId }, { session });
+				numVotes = voteType ? -1 : 1;
+				break;
+			case '2': // Add a opposite sign vote
+				// Update existed vote
+				await Votes.updateOne(
+					{ docId: commentId, userId: userId },
+					{ voteType: voteType },
+					{ session }
+				);
+				numVotes = voteType ? 2 : -2;
+				break;
+			default:
+				break;
 		}
+		// Update the votes of the comment
+		const updatedComment = await Comments.findByIdAndUpdate(
+			commentId,
+			{ $inc: { votes: numVotes } },
+			{ session: session, new: true }
+		);
+		// Update the votes for the comment's creator
+		await Users.updateOne({ _id: creatorId }, { $inc: { votes: numVotes } }, { session });
 		res.status(200).send({
 			comment: updatedComment,
 			msg: 'Updated votes successfully',

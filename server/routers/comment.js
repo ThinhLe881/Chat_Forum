@@ -18,6 +18,6 @@ router.post('/child/:id', verifyToken, addChildComment);
 router.patch('/:id', verifyToken, editComment);
 router.delete('/:id', verifyToken, deleteComment);
 router.delete('/child/:id', verifyToken, deleteChildComment);
-router.patch('/:id/votes/:type', verifyToken, voteComment);
+router.patch('/:id/votes/:type/:option', verifyToken, voteComment);
 
 export default router;

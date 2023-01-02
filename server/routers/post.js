@@ -8,6 +8,6 @@ router.get('/', getPosts);
 router.post('/', verifyToken, addPost);
 router.patch('/:id', verifyToken, editPost);
 router.delete('/:id', verifyToken, deletePost);
-router.patch('/:id/votes/:type', verifyToken, votePost);
+router.patch('/:id/votes/:type/:option', verifyToken, votePost);
 
 export default router;

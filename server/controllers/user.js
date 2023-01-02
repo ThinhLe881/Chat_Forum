@@ -71,21 +71,27 @@ export const getUserPosts = async (req, res) => {
 };
 
 export const getVotedPosts = async (req, res) => {
+	const session = await startSession();
 	try {
+		session.startTransaction(transactionOptions);
 		const voteType = req.params.type;
 		const userId = getUserId(req);
 		// Get all up voted posts
-		const postIds = await Votes.find({ userId: userId, voteType: voteType })
-			.map((x) => x.postId)
-			.toArray();
-		const posts = await Posts.find({ _id: { $in: postIds } }).sort({
+		const postIds = (
+			await Votes.find({ userId: userId, voteType: voteType }, null, { session })
+		).map((x) => x.docId);
+		const posts = await Posts.find({ _id: { $in: postIds } }, null, { session }).sort({
 			date: -1,
 		});
-		return res.status(200).send({
+		res.status(200).send({
 			posts: posts,
 		});
+		await session.commitTransaction();
 	} catch (err) {
 		console.log(err);
 		res.status(500).send(err);
+		await session.abortTransaction();
+	} finally {
+		await session.endSession();
 	}
 };
