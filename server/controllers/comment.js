@@ -6,17 +6,26 @@ import Posts from '../models/post.model.js';
 import Comments from '../models/comment.model.js';
 import Votes from '../models/vote.model.js';
 
-export const getComments = async (req, res) => {
+export const getCommentById = async (req, res) => {
+	const session = await startSession();
 	try {
+		session.startTransaction(transactionOptions);
 		const parentId = Types.ObjectId(req.params.id);
+		const parentComment = await Comments.findById(parentId);
 		// Get comments
-		const comments = await Comments.find({ parentId: parentId }).sort({
+		const childComments = await Comments.find({ parentId: parentId }).sort({
 			date: -1,
 		});
-		res.status(200).send(comments);
+		res.status(200).send({
+			parent: parentComment,
+			child: childComments,
+		});
 	} catch (err) {
 		console.log(err);
 		res.status(500).send(err);
+		await session.abortTransaction();
+	} finally {
+		await session.endSession();
 	}
 };
 

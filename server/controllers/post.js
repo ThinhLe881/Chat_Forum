@@ -16,6 +16,29 @@ export const getPosts = async (req, res) => {
 	}
 };
 
+export const getPostById = async (req, res) => {
+	const session = await startSession();
+	try {
+		session.startTransaction(transactionOptions);
+		const postId = Types.ObjectId(req.params.id);
+		const post = await Posts.findById(postId);
+		// Get the highest layer comments of the post
+		const comments = await Comments.find({ parentId: postId }).sort({
+			date: -1,
+		});
+		res.status(200).send({
+			post: post,
+			comments: comments,
+		});
+	} catch (err) {
+		console.log(err);
+		res.status(500).send(err);
+		await session.abortTransaction();
+	} finally {
+		await session.endSession();
+	}
+};
+
 export const addPost = async (req, res) => {
 	const session = await startSession();
 	try {

@@ -9,6 +9,7 @@ import postRoute from './routers/post.js';
 import commentRoute from './routers/comment.js';
 import topicRoute from './routers/topic.js';
 import voteRoute from './routers/vote.js';
+import { apiLimiter } from './middlewares/apiLimiter.js';
 
 const app = express();
 app.use(cors());
@@ -32,10 +33,10 @@ app.get('/', function (req, res) {
 });
 
 app.use('/auth', authRoute);
-app.use('/users', userRoute);
-app.use('/posts', postRoute);
-app.use('/comments', commentRoute);
-app.use('/topics', topicRoute);
-app.use('/votes', voteRoute);
+app.use('/users', apiLimiter, userRoute);
+app.use('/posts', apiLimiter, postRoute);
+app.use('/comments', apiLimiter, commentRoute);
+app.use('/topics', apiLimiter, topicRoute);
+app.use('/votes', apiLimiter, voteRoute);
 
 app.listen(PORT, () => console.log(`Server is running on port: ${PORT}`));

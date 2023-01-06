@@ -1,5 +1,5 @@
 import {
-	getComments,
+	getCommentById,
 	addComment,
 	addChildComment,
 	editComment,
@@ -7,17 +7,17 @@ import {
 	voteComment,
 	deleteChildComment,
 } from '../controllers/comment.js';
-import { verifyToken } from '../middlewares/auth.js';
+import { verifyUserToken } from '../middlewares/verifyToken.js';
 import express from 'express';
 
 const router = express.Router();
 
-router.get('/:id', getComments);
-router.post('/:id', verifyToken, addComment);
-router.post('/child/:id', verifyToken, addChildComment);
-router.patch('/:id', verifyToken, editComment);
-router.delete('/:id', verifyToken, deleteComment);
-router.delete('/child/:id', verifyToken, deleteChildComment);
-router.patch('/:id/votes/:option/:type', verifyToken, voteComment);
+router.get('/:id', getCommentById);
+router.post('/:id', verifyUserToken, addComment);
+router.post('/child/:id', verifyUserToken, addChildComment);
+router.patch('/:id', verifyUserToken, editComment);
+router.delete('/:id', verifyUserToken, deleteComment);
+router.delete('/child/:id', verifyUserToken, deleteChildComment);
+router.patch('/:id/votes/:option/:type', verifyUserToken, voteComment);
 
 export default router;
