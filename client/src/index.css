@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 @layer components {
-    .icon {
-        @apply h-9 w-6 lg:w-9 cursor-pointer rounded-sm lg:p-1
-        lg:hover:bg-gray-100
-    }
+	.icon {
+		@apply h-10 w-10 cursor-pointer rounded-sm p-2
+        lg:hover:bg-gray-200;
+	}
 }

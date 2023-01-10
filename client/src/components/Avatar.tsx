@@ -11,7 +11,7 @@ function Avatar({ seed, small, large }: Props) {
 	return (
 		<div
 			className={`relative h-10 w-10 overflow-hidden rounded-full border-gray-300 bg-white ${
-				small && 'h-5 w-5 flex-shrink-0'
+				small && 'h-7 w-7 flex-shrink-0'
 			} ${large && 'h-20 w-20'}`}
 		>
 			<img
