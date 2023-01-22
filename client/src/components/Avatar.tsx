@@ -10,8 +10,8 @@ function Avatar({ seed, small, large }: Props) {
 	const userId = '63af5463218aecbee5bde0bc';
 	return (
 		<div
-			className={`relative h-10 w-10 overflow-hidden rounded-full border-gray-300 bg-white ${
-				small && 'h-7 w-7 flex-shrink-0'
+			className={`relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-full border-gray-300 bg-white ${
+				small && 'h-7 w-7'
 			} ${large && 'h-20 w-20'}`}
 		>
 			<img
