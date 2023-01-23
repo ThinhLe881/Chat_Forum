@@ -28,6 +28,7 @@ function Header() {
 	const auth = true;
 	const page = 'Home';
 	const username = 'Thinhisme';
+	const userId = '63af5463218aecbee5bde0bc';
 	const votes = 1000;
 
 	return (
@@ -103,7 +104,10 @@ function Header() {
 					className='ml-5 hidden cursor-pointer items-center rounded-md border border-white px-2 py-1 hover:border-gray-200 lg:flex lg:min-w-[220px]'
 					onClick={() => setOpen2(!open2)}
 				>
-					<Avatar small />
+					<Avatar
+						userId={userId}
+						small
+					/>
 					<div className='ml-2 flex flex-col justify-center'>
 						<span className='text-xs font-medium'>{username}</span>
 						<span className='text-xs font-medium text-gray-400'>{votes} votes</span>
@@ -134,7 +138,10 @@ function Header() {
 			<div className='ml-auto flex items-center justify-evenly gap-x-3 lg:hidden'>
 				<MagnifyingGlassIcon className='icon h-7 w-7 p-0.5' />
 				<div>
-					<Avatar small />
+					<Avatar
+						userId={userId}
+						small
+					/>
 				</div>
 			</div>
 		</div>
