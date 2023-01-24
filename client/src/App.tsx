@@ -5,6 +5,7 @@ function App() {
 	return (
 		<div className='h-screen w-screen bg-slate-200'>
 			<Header />
+			{/* For mobile view */}
 			<Footer />
 		</div>
 	);

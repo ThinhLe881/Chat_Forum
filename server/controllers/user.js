@@ -25,7 +25,6 @@ export const editUser = async (req, res) => {
 		const updatedUser = await Users.findByIdAndUpdate(
 			userId,
 			{
-				name: req.body.name,
 				email: req.body.email,
 			},
 			{ session: session, new: true }

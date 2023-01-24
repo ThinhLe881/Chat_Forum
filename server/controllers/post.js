@@ -81,7 +81,6 @@ export const editPost = async (req, res) => {
 		const updatedPost = await Posts.findOneAndUpdate(
 			{ _id: postId, creatorId: creatorId },
 			{
-				title: req.body.title,
 				content: req.body.content,
 			},
 			{ new: true }
