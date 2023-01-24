@@ -51,7 +51,9 @@ function Header() {
 							? 'border-gray-400 hover:border-gray-600'
 							: 'border-white hover:border-gray-200'
 					}`}
-					onClick={() => setOpen1(!open1)}
+					onClick={() => {
+						setOpen1(!open1), setOpen2(false);
+					}}
 				>
 					<div className='flex items-center'>
 						<HomeIcon className='mr-2 hidden h-5 w-5 lg:block' />
@@ -100,22 +102,36 @@ function Header() {
 			)}
 
 			{auth ? (
-				<div
-					className='ml-5 hidden cursor-pointer items-center rounded-md border border-white px-2 py-1 hover:border-gray-200 lg:flex lg:min-w-[220px]'
-					onClick={() => setOpen2(!open2)}
-				>
-					<Avatar
-						userId={userId}
-						small
-					/>
-					<div className='ml-2 flex flex-col justify-center'>
-						<span className='text-xs font-medium'>{username}</span>
-						<span className='text-xs font-medium text-gray-400'>{votes} votes</span>
+				<div className='relative flex flex-col'>
+					<div
+						className={`ml-5 hidden cursor-pointer items-center rounded-md border px-2 py-1 lg:flex lg:min-w-[220px] ${
+							open2
+								? 'border-gray-400 hover:border-gray-600'
+								: 'border-white hover:border-gray-200'
+						}`}
+						onClick={() => {
+							setOpen2(!open2), setOpen1(false);
+						}}
+					>
+						<Avatar
+							userId={userId}
+							small
+						/>
+						<div className='ml-2 flex flex-col justify-center'>
+							<span className='text-xs font-medium'>{username}</span>
+							<span className='text-xs font-medium text-gray-400'>{votes} votes</span>
+						</div>
+						{open2 ? (
+							<ChevronUpIcon className='ml-2 h-4 w-4 lg:ml-auto' />
+						) : (
+							<ChevronDownIcon className='ml-2 h-4 w-4 lg:ml-auto' />
+						)}
 					</div>
-					{open2 ? (
-						<ChevronUpIcon className='ml-2 h-4 w-4 lg:ml-auto' />
-					) : (
-						<ChevronDownIcon className='ml-2 h-4 w-4 lg:ml-auto' />
+					{open2 === true && (
+						<DropdownMenu
+							option={false}
+							stateChanger={setOpen2}
+						/>
 					)}
 				</div>
 			) : (
