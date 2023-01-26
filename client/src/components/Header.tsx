@@ -7,6 +7,7 @@ import {
 } from '@heroicons/react/24/solid';
 import {
 	ArrowLeftIcon,
+	Bars3Icon,
 	BellIcon,
 	ChatBubbleOvalLeftEllipsisIcon,
 	PlusIcon,
@@ -22,10 +23,16 @@ import Logo4 from '../assets/logo-4.png';
 import Avatar from './Avatar';
 import DropdownMenu from './DropdownMenu';
 
+function SideMenu() {
+	return <div className='h-screen w-72 bg-white text-center'>Menu</div>;
+}
+
 function Header() {
+	// need to be refactored (redux)
 	const [openPage, setOpenPage] = useState(false);
 	const [openUser, setOpenUser] = useState(false);
 	const [openSearch, setOpenSearch] = useState(false);
+	const [openSideBar, setOpenSideBar] = useState(false);
 
 	const auth = true;
 	const page = 'Home';
@@ -69,8 +76,17 @@ function Header() {
 							/>
 							{/* For mobile view */}
 							<img
-								className='xl:hidden'
+								className='hidden md:max-xl:block'
 								src={Logo2}
+							/>
+							<Bars3Icon
+								className='icon h-7 w-7 p-0.5 md:hidden'
+								onClick={() => {
+									setOpenSideBar(!openSideBar);
+									setOpenSearch(false);
+									setOpenPage(false);
+									setOpenUser(false);
+								}}
 							/>
 						</div>
 
@@ -82,9 +98,10 @@ function Header() {
 										: 'border-white hover:border-gray-200'
 								}`}
 								onClick={() => {
-									setOpenPage(!openPage),
-										setOpenUser(false),
-										setOpenSearch(false);
+									setOpenSideBar(false);
+									setOpenSearch(false);
+									setOpenPage(!openPage);
+									setOpenUser(false);
 								}}
 							>
 								<div className='flex items-center'>
@@ -140,9 +157,10 @@ function Header() {
 									<div
 										className='md:hidden'
 										onClick={() => {
-											setOpenSearch(!openSearch),
-												setOpenPage(false),
-												setOpenUser(false);
+											setOpenSideBar(false);
+											setOpenSearch(!openSearch);
+											setOpenPage(false);
+											setOpenUser(false);
 										}}
 									>
 										<MagnifyingGlassIcon className='icon h-7 w-7 p-0.5' />
@@ -150,9 +168,10 @@ function Header() {
 									{/* For desktop view */}
 									<div
 										onClick={() => {
-											setOpenUser(!openUser),
-												setOpenPage(false),
-												setOpenSearch(false);
+											setOpenSideBar(false);
+											setOpenSearch(false);
+											setOpenPage(false);
+											setOpenUser(!openUser);
 										}}
 									>
 										<div
@@ -220,6 +239,7 @@ function Header() {
 					</div>
 				)}
 			</div>
+			{openSideBar && <SideMenu />}
 		</div>
 	);
 }
