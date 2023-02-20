@@ -30,7 +30,7 @@ function Header() {
 	const [openSearchBar, setOpenSearchBar] = useState(false);
 	const [openSideMenu, setOpenSideMenu] = useState(false);
 
-	// dummty data
+	// dummy data
 	const auth = true;
 	const page = 'Home';
 	const username = 'Thinhisme';
