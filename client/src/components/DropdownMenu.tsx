@@ -147,10 +147,10 @@ function DropdownMenu({ option, stateChanger }: MenyProps) {
 		case 'sideMenu':
 			return (
 				<div className='absolute top-10 left-0 w-72 rounded-md border border-gray-400 bg-white px-3 py-1'>
-					<DropdownItem className='flex px-1'>
+					<DropdownItem className='px-1'>
 						<span className='font-medium'>Your Communities</span>
 					</DropdownItem>
-					<DropdownItem className='flex hover:bg-gray-100'>
+					<DropdownItem className='hover:bg-gray-100'>
 						<div
 							className='flex items-center'
 							onClick={() => stateChanger(false)}
@@ -167,10 +167,8 @@ function DropdownMenu({ option, stateChanger }: MenyProps) {
 			);
 
 		default:
-			break;
+			return null;
 	}
-
-	return null;
 }
 
 export default DropdownMenu;
