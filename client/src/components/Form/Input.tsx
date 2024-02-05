@@ -14,7 +14,7 @@ type Props = {
 	isRequired: boolean;
 	placeholder: string;
 	customClass?: string;
-	pattern?: string;
+	errorText?: string;
 };
 
 export default function Input({
@@ -28,9 +28,10 @@ export default function Input({
 	isRequired = false,
 	placeholder,
 	customClass,
+	errorText,
 }: Props) {
 	return (
-		<div className='my-5'>
+		<div className='my-3'>
 			<label
 				htmlFor={labelFor}
 				className='sr-only'
@@ -47,6 +48,7 @@ export default function Input({
 				className={fixedInputClass + customClass}
 				placeholder={placeholder}
 			/>
+			{errorText ? <div className='mt-1 text-xs text-red-500'>{errorText}</div> : <></>}
 		</div>
 	);
 }

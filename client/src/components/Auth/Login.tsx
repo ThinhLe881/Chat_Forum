@@ -3,12 +3,16 @@ import { loginFields } from '../../constants/FormFields';
 import Input from '../Form/Input';
 import FormAction from '../Form/FormAction';
 import AuthFooter from './AuthFooter';
+import axios from 'axios';
 
-let fieldsState: { [id: string]: string } = {};
-loginFields.forEach((field) => (fieldsState[field.id] = ''));
+let fieldsText: { [id: string]: string } = {};
+let fieldsError: { [id: string]: string } = {};
+loginFields.forEach((field) => (fieldsText[field.id] = ''));
+loginFields.forEach((field) => (fieldsError[field.id] = ''));
 
 export default function Login() {
-	const [loginState, setLoginState] = useState(fieldsState);
+	const [loginState, setLoginState] = useState(fieldsText);
+	const [errorState, setErrorState] = useState(fieldsError);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setLoginState({ ...loginState, [e.target.id]: e.target.value });
@@ -24,7 +28,7 @@ export default function Login() {
 
 	return (
 		<form
-			className='mt-8 space-y-6'
+			className='space-y-2'
 			onSubmit={handleSubmit}
 		>
 			<div className='-space-y-px'>
@@ -40,6 +44,7 @@ export default function Login() {
 						type={field.type}
 						isRequired={field.isRequired}
 						placeholder={field.placeholder}
+						errorText={errorState[field.id]}
 					/>
 				))}
 			</div>
@@ -47,7 +52,7 @@ export default function Login() {
 			<AuthFooter />
 			<FormAction
 				handler={handleSubmit}
-				text='Login'
+				text='Log In'
 			/>
 		</form>
 	);
