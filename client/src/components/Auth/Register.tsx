@@ -1,10 +1,10 @@
-import { useState, useRef } from 'react';
-import React from 'react';
+import axios from 'axios';
+import React, { useState } from 'react';
 import { registerFields } from '../../constants/FormFields';
+import { emailRegex, passwordRegex, usernameRegex } from '../../constants/Regex';
+import Alert from '../Form/Alert';
 import FormAction from '../Form/FormAction';
 import Input from '../Form/Input';
-import { usernameRegex, emailRegex, passwordRegex } from '../../constants/Regex';
-import axios from 'axios';
 
 let fieldsText: { [id: string]: string } = {};
 let fieldsError: { [id: string]: string } = {};
@@ -14,16 +14,19 @@ registerFields.forEach((field) => (fieldsError[field.id] = ''));
 const Register = () => {
 	const [registerState, setRegisterState] = useState(fieldsText);
 	const [errorState, setErrorState] = useState(fieldsError);
-	const [apiError, setApiError] = useState(null);
+	const [apiSuccess, setApiSuccess] = useState(false);
+	const [apiStatus, setApiStatus] = useState('');
+	const [loading, setLoading] = useState(false);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setApiStatus('');
 		setRegisterState({ ...registerState, [e.target.id]: e.target.value });
 	};
 
 	const handleSubmit: React.FormEventHandler = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		if (verifyEmail() && verifyPassword()) {
+		if (verifyUsername() && verifyEmail() && verifyPassword()) {
 			registerUser();
 		}
 
@@ -70,6 +73,8 @@ const Register = () => {
 
 	// Handle register API
 	const registerUser = () => {
+		setLoading(true);
+
 		axios<String, any>({
 			method: 'post',
 			url: '/auth/register',
@@ -80,11 +85,14 @@ const Register = () => {
 			},
 		})
 			.then((res) => {
-				console.log(res);
+				setApiStatus('Your account has been created successfully');
+				setApiSuccess(true);
 			})
 			.catch((err) => {
-				setApiError(err.response.data);
-			});
+				err.response ? setApiStatus(err.response.data) : setApiStatus(err.message);
+				setApiSuccess(false);
+			})
+			.finally(() => setLoading(false));
 	};
 
 	return (
@@ -105,10 +113,15 @@ const Register = () => {
 						errorText={errorState[field.id]}
 					/>
 				))}
-				{apiError ? <div>{apiError}</div> : <></>}
+				{apiSuccess ? <div>{apiSuccess}</div> : <></>}
 				<FormAction
 					handler={handleSubmit}
-					text='Sign Up'
+					text={'Sign Up'}
+					loading={loading}
+				/>
+				<Alert
+					text={apiStatus}
+					success={apiSuccess}
 				/>
 			</div>
 		</form>

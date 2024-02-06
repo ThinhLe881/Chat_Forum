@@ -16,7 +16,12 @@ export const register = async (req, res) => {
 			return res.status(400).send(error_message_format(error.details[0].message));
 		}
 		if (await Users.findOne({ email: req.body.email })) {
-			return res.status(400).send('Email already exists');
+			return res
+				.status(400)
+				.send('Email already exists. Please try logging in with that email');
+		}
+		if (await Users.findOne({ name: req.body.name })) {
+			return res.status(400).send('Username already taken. Please try another username');
 		}
 		// Hash password
 		const salt = await bcrypt.genSalt(10);
@@ -44,11 +49,11 @@ export const login = async (req, res) => {
 		}
 		const user = await Users.findOne({ email: req.body.email });
 		if (!user) {
-			return res.status(400).send('Email is not found');
+			return res.status(400).send('Email was not found. Please try signing up new account.');
 		}
 		// Check password
 		if (!(await bcrypt.compare(req.body.password, user.password))) {
-			return res.status(400).send('Invalid password');
+			return res.status(400).send('Incorrect email or password. Please try again.');
 		}
 		// Create JWT token
 		const token = jwt.sign({ id: user._id }, process.env.TOKEN_SECRET, { expiresIn: '365d' }); // set long expirey time for easy testing

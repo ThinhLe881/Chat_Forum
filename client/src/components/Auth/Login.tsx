@@ -1,9 +1,11 @@
+import axios from 'axios';
 import { useState } from 'react';
 import { loginFields } from '../../constants/FormFields';
-import Input from '../Form/Input';
+import Alert from '../Form/Alert';
 import FormAction from '../Form/FormAction';
+import Input from '../Form/Input';
 import AuthFooter from './AuthFooter';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 let fieldsText: { [id: string]: string } = {};
 let fieldsError: { [id: string]: string } = {};
@@ -12,9 +14,13 @@ loginFields.forEach((field) => (fieldsError[field.id] = ''));
 
 export default function Login() {
 	const [loginState, setLoginState] = useState(fieldsText);
-	const [errorState, setErrorState] = useState(fieldsError);
+	const [apiSuccess, setApiSuccess] = useState(false);
+	const [apiStatus, setApiStatus] = useState('');
+	const [loading, setLoading] = useState(false);
+	const navigate = useNavigate();
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setApiStatus('');
 		setLoginState({ ...loginState, [e.target.id]: e.target.value });
 	};
 
@@ -24,7 +30,28 @@ export default function Login() {
 	};
 
 	// Handle login API
-	const authenticateUser = () => {};
+	const authenticateUser = () => {
+		setLoading(true);
+
+		axios<String, any>({
+			method: 'post',
+			url: '/auth/login',
+			data: {
+				email: loginState['email'],
+				password: loginState['password'],
+			},
+		})
+			.then((res) => {
+				localStorage.setItem('token', res.data.token);
+				setApiSuccess(true);
+				navigate('/');
+			})
+			.catch((err) => {
+				err.response ? setApiStatus(err.response.data) : setApiStatus(err.message);
+				setApiSuccess(false);
+			})
+			.finally(() => setLoading(false));
+	};
 
 	return (
 		<form
@@ -44,7 +71,6 @@ export default function Login() {
 						type={field.type}
 						isRequired={field.isRequired}
 						placeholder={field.placeholder}
-						errorText={errorState[field.id]}
 					/>
 				))}
 			</div>
@@ -53,6 +79,11 @@ export default function Login() {
 			<FormAction
 				handler={handleSubmit}
 				text='Log In'
+				loading={loading}
+			/>
+			<Alert
+				text={apiStatus}
+				success={apiSuccess}
 			/>
 		</form>
 	);
