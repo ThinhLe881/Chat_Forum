@@ -11,8 +11,8 @@ import express from 'express';
 
 const router = express.Router();
 
-router.get('/', getPosts);
-router.get('/:id', getPostById);
+router.get('/', verifyUserToken, getPosts);
+router.get('/:id', verifyUserToken, getPostById);
 router.post('/', verifyUserToken, addPost);
 router.patch('/:id', verifyUserToken, editPost);
 router.delete('/:id', verifyUserToken, deletePost);

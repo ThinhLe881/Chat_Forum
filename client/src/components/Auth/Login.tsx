@@ -6,6 +6,7 @@ import FormAction from '../Form/FormAction';
 import Input from '../Form/Input';
 import AuthFooter from './AuthFooter';
 import { useNavigate } from 'react-router-dom';
+import { User } from '../../constants/Type';
 
 let fieldsText: { [id: string]: string } = {};
 let fieldsError: { [id: string]: string } = {};
@@ -42,6 +43,12 @@ export default function Login() {
 			},
 		})
 			.then((res) => {
+				const user: User = {
+					email: res.data.email,
+					name: res.data.name,
+					id: res.data.id,
+				};
+				localStorage.setItem('user', JSON.stringify(user));
 				localStorage.setItem('token', res.data.token);
 				setApiSuccess(true);
 				navigate('/');

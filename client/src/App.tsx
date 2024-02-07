@@ -1,4 +1,5 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 
@@ -18,12 +19,7 @@ const App = () => {
 						/>
 						<Route
 							path='/'
-							element={
-								<Navigate
-									to='/login'
-									replace={true}
-								/>
-							}
+							element={<HomePage />}
 						/>
 					</Routes>
 				</BrowserRouter>
