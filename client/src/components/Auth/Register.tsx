@@ -18,12 +18,12 @@ const Register = () => {
 	const [apiStatus, setApiStatus] = useState('');
 	const [loading, setLoading] = useState(false);
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
 		setApiStatus('');
 		setRegisterState({ ...registerState, [e.target.id]: e.target.value });
 	};
 
-	const handleSubmit: React.FormEventHandler = (e: React.FormEvent<HTMLFormElement>) => {
+	const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
 		e.preventDefault();
 
 		if (verifyUsername() && verifyEmail() && verifyPassword()) {

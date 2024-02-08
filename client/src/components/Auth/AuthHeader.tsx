@@ -8,7 +8,7 @@ type Props = {
 	linkUrl: string;
 };
 
-export default function Header({ heading, paragraph, linkName, linkUrl = '#' }: Props) {
+const AuthHeader = ({ heading, paragraph, linkName, linkUrl = '#' }: Props) => {
 	return (
 		<div className='mb-10'>
 			<div className='flex justify-center'>
@@ -30,4 +30,6 @@ export default function Header({ heading, paragraph, linkName, linkUrl = '#' }: 
 			</p>
 		</div>
 	);
-}
+};
+
+export default AuthHeader;

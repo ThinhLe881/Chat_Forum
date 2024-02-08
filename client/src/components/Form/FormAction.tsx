@@ -5,7 +5,7 @@ type Props = {
 	loading: boolean;
 };
 
-export default function FormAction({ handler, action = 'submit', text, loading }: Props) {
+const FormAction = ({ handler, action = 'submit', text, loading }: Props) => {
 	return (
 		<>
 			{action === 'submit' ? (
@@ -41,4 +41,6 @@ export default function FormAction({ handler, action = 'submit', text, loading }
 			)}
 		</>
 	);
-}
+};
+
+export default FormAction;

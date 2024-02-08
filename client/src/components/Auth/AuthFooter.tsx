@@ -1,4 +1,4 @@
-export default function AuthFooter() {
+const AuthFooter = () => {
 	return (
 		<div className='flex items-center justify-between'>
 			<div className='flex items-center'>
@@ -26,4 +26,6 @@ export default function AuthFooter() {
 			</div>
 		</div>
 	);
-}
+};
+
+export default AuthFooter;

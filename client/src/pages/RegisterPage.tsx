@@ -1,7 +1,7 @@
 import Header from '../components/Auth/AuthHeader';
 import Register from '../components/Auth/Register';
 
-export default function RegisterPage() {
+const RegisterPage = () => {
 	return (
 		<>
 			<Header
@@ -13,4 +13,6 @@ export default function RegisterPage() {
 			<Register />
 		</>
 	);
-}
+};
+
+export default RegisterPage;

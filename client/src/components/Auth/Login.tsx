@@ -13,19 +13,19 @@ let fieldsError: { [id: string]: string } = {};
 loginFields.forEach((field) => (fieldsText[field.id] = ''));
 loginFields.forEach((field) => (fieldsError[field.id] = ''));
 
-export default function Login() {
+const Login = () => {
 	const [loginState, setLoginState] = useState(fieldsText);
 	const [apiSuccess, setApiSuccess] = useState(false);
 	const [apiStatus, setApiStatus] = useState('');
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
 		setApiStatus('');
 		setLoginState({ ...loginState, [e.target.id]: e.target.value });
 	};
 
-	const handleSubmit: React.FormEventHandler = (e: React.FormEvent<HTMLFormElement>) => {
+	const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
 		e.preventDefault();
 		authenticateUser();
 	};
@@ -51,7 +51,7 @@ export default function Login() {
 				localStorage.setItem('user', JSON.stringify(user));
 				localStorage.setItem('token', res.data.token);
 				setApiSuccess(true);
-				navigate('/');
+				navigate('/', { replace: true });
 			})
 			.catch((err) => {
 				err.response ? setApiStatus(err.response.data) : setApiStatus(err.message);
@@ -94,4 +94,6 @@ export default function Login() {
 			/>
 		</form>
 	);
-}
+};
+
+export default Login;

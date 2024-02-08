@@ -15,7 +15,7 @@ type Props = {
 	errorText?: string;
 };
 
-export default function Input({
+const Input = ({
 	handleChange,
 	value,
 	labelText,
@@ -27,7 +27,7 @@ export default function Input({
 	placeholder,
 	customClass,
 	errorText,
-}: Props) {
+}: Props) => {
 	return (
 		<div className='my-3'>
 			<label
@@ -49,4 +49,6 @@ export default function Input({
 			{errorText ? <div className='mt-1 text-xs text-red-500'>{errorText}</div> : <></>}
 		</div>
 	);
-}
+};
+
+export default Input;
