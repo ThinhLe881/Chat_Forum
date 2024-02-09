@@ -8,7 +8,7 @@ type Props = {
 	linkUrl: string;
 };
 
-const AuthHeader = ({ heading, paragraph, linkName, linkUrl = '#' }: Props) => {
+const FormHeader = ({ heading, paragraph, linkName, linkUrl = '#' }: Props) => {
 	return (
 		<div className='mb-10'>
 			<div className='flex justify-center'>
@@ -32,4 +32,4 @@ const AuthHeader = ({ heading, paragraph, linkName, linkUrl = '#' }: Props) => {
 	);
 };
 
-export default AuthHeader;
+export default FormHeader;

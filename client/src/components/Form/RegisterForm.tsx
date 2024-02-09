@@ -2,16 +2,16 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { registerFields } from '../../constants/FormFields';
 import { emailRegex, passwordRegex, usernameRegex } from '../../constants/Regex';
-import Alert from '../Form/Alert';
-import FormAction from '../Form/FormAction';
-import Input from '../Form/Input';
+import Alert from './FormAlert';
+import FormAction from './FormAction';
+import Input from './FormInput';
 
 let fieldsText: { [id: string]: string } = {};
 let fieldsError: { [id: string]: string } = {};
 registerFields.forEach((field) => (fieldsText[field.id] = ''));
 registerFields.forEach((field) => (fieldsError[field.id] = ''));
 
-const Register = () => {
+const RegisterForm = () => {
 	const [registerState, setRegisterState] = useState(fieldsText);
 	const [errorState, setErrorState] = useState(fieldsError);
 	const [apiSuccess, setApiSuccess] = useState(false);
@@ -128,4 +128,4 @@ const Register = () => {
 	);
 };
 
-export default Register;
+export default RegisterForm;

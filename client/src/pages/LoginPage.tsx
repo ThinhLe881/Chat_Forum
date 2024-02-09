@@ -1,9 +1,10 @@
-import AuthHeader from '../components/Auth/AuthHeader';
-import Login from '../components/Auth/Login';
+import AuthHeader from '../components/Form/FormHeader';
+import Login from '../components/Form/LoginForm';
+import FormCard from '../components/Form/FormCard';
 
 const LoginPage = () => {
 	return (
-		<>
+		<FormCard>
 			<AuthHeader
 				heading='Log in to your account'
 				paragraph="Don't have an account yet?"
@@ -11,7 +12,7 @@ const LoginPage = () => {
 				linkUrl='/register'
 			/>
 			<Login />
-		</>
+		</FormCard>
 	);
 };
 

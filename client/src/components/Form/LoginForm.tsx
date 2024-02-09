@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { useState } from 'react';
 import { loginFields } from '../../constants/FormFields';
-import Alert from '../Form/Alert';
-import FormAction from '../Form/FormAction';
-import Input from '../Form/Input';
-import AuthFooter from './AuthFooter';
+import Alert from './FormAlert';
+import FormAction from './FormAction';
+import Input from './FormInput';
+import AuthFooter from './FormFooter';
 import { useNavigate } from 'react-router-dom';
 import { User } from '../../constants/Type';
 
@@ -13,7 +13,7 @@ let fieldsError: { [id: string]: string } = {};
 loginFields.forEach((field) => (fieldsText[field.id] = ''));
 loginFields.forEach((field) => (fieldsError[field.id] = ''));
 
-const Login = () => {
+const LoginForm = () => {
 	const [loginState, setLoginState] = useState(fieldsText);
 	const [apiSuccess, setApiSuccess] = useState(false);
 	const [apiStatus, setApiStatus] = useState('');
@@ -96,4 +96,4 @@ const Login = () => {
 	);
 };
 
-export default Login;
+export default LoginForm;

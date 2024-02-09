@@ -1,9 +1,10 @@
-import Header from '../components/Auth/AuthHeader';
-import Register from '../components/Auth/Register';
+import Header from '../components/Form/FormHeader';
+import Register from '../components/Form/RegisterForm';
+import FormCard from '../components/Form/FormCard';
 
 const RegisterPage = () => {
 	return (
-		<>
+		<FormCard>
 			<Header
 				heading='Sign up to create an account'
 				paragraph='Already have an account? '
@@ -11,7 +12,7 @@ const RegisterPage = () => {
 				linkUrl='/login'
 			/>
 			<Register />
-		</>
+		</FormCard>
 	);
 };
 

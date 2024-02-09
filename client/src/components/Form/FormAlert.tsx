@@ -3,7 +3,7 @@ type Props = {
 	success: boolean;
 };
 
-const Alert = ({ text, success }: Props) => {
+const FormAlert = ({ text, success }: Props) => {
 	return text ? (
 		<div
 			className={`my-2 rounded-lg border p-4 text-sm ${
@@ -21,4 +21,4 @@ const Alert = ({ text, success }: Props) => {
 	);
 };
 
-export default Alert;
+export default FormAlert;
