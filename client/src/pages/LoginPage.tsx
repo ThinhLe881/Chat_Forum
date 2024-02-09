@@ -1,6 +1,6 @@
+import FormCard from '../components/Form/FormCard';
 import FormHeader from '../components/Form/FormHeader';
 import LoginForm from '../components/Form/LoginForm';
-import FormCard from '../components/Form/FormCard';
 
 const LoginPage = () => {
 	return (

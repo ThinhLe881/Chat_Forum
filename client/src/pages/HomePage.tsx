@@ -19,7 +19,13 @@ const HomePage = () => {
 			/>
 		);
 	} else {
-		return <div className='text-center'>Welcome to Chat Forum</div>;
+		return (
+			<>
+				<div className='text-center font-sans text-2xl font-extrabold text-orange-600'>
+					Welcome to Chat Forum
+				</div>
+			</>
+		);
 	}
 };
 

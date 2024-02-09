@@ -1,6 +1,6 @@
+import FormCard from '../components/Form/FormCard';
 import FormHeader from '../components/Form/FormHeader';
 import RegisterForm from '../components/Form/RegisterForm';
-import FormCard from '../components/Form/FormCard';
 
 const RegisterPage = () => {
 	return (
