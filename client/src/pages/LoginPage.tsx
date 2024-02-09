@@ -1,17 +1,17 @@
-import AuthHeader from '../components/Form/FormHeader';
-import Login from '../components/Form/LoginForm';
+import FormHeader from '../components/Form/FormHeader';
+import LoginForm from '../components/Form/LoginForm';
 import FormCard from '../components/Form/FormCard';
 
 const LoginPage = () => {
 	return (
 		<FormCard>
-			<AuthHeader
+			<FormHeader
 				heading='Log in to your account'
 				paragraph="Don't have an account yet?"
 				linkName='Sign up'
 				linkUrl='/register'
 			/>
-			<Login />
+			<LoginForm />
 		</FormCard>
 	);
 };

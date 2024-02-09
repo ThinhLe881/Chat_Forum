@@ -2,9 +2,9 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { registerFields } from '../../constants/FormFields';
 import { emailRegex, passwordRegex, usernameRegex } from '../../constants/Regex';
-import Alert from './FormAlert';
 import FormAction from './FormAction';
-import Input from './FormInput';
+import FormAlert from './FormAlert';
+import FormInput from './FormInput';
 
 let fieldsText: { [id: string]: string } = {};
 let fieldsError: { [id: string]: string } = {};
@@ -30,6 +30,7 @@ const RegisterForm = () => {
 			registerUser();
 		}
 
+		console.log(verifyEmail());
 		setErrorState({ ...fieldsError });
 	};
 
@@ -99,7 +100,7 @@ const RegisterForm = () => {
 		<form onSubmit={handleSubmit}>
 			<div>
 				{registerFields.map((field) => (
-					<Input
+					<FormInput
 						key={field.id}
 						handleChange={handleChange}
 						value={registerState[field.id]}
@@ -113,17 +114,16 @@ const RegisterForm = () => {
 						errorText={errorState[field.id]}
 					/>
 				))}
-				{apiSuccess ? <div>{apiSuccess}</div> : <></>}
-				<FormAction
-					handler={handleSubmit}
-					text={'Sign Up'}
-					loading={loading}
-				/>
-				<Alert
-					text={apiStatus}
-					success={apiSuccess}
-				/>
 			</div>
+			<FormAction
+				handler={handleSubmit}
+				text={'Sign Up'}
+				loading={loading}
+			/>
+			<FormAlert
+				text={apiStatus}
+				success={apiSuccess}
+			/>
 		</form>
 	);
 };

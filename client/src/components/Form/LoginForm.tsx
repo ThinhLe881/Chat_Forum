@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { useState } from 'react';
-import { loginFields } from '../../constants/FormFields';
-import Alert from './FormAlert';
-import FormAction from './FormAction';
-import Input from './FormInput';
-import AuthFooter from './FormFooter';
 import { useNavigate } from 'react-router-dom';
+import { loginFields } from '../../constants/FormFields';
 import { User } from '../../constants/Type';
+import FormAction from './FormAction';
+import FormAlert from './FormAlert';
+import FormFooter from './FormFooter';
+import FormInput from './FormInput';
 
 let fieldsText: { [id: string]: string } = {};
 let fieldsError: { [id: string]: string } = {};
@@ -65,9 +65,9 @@ const LoginForm = () => {
 			className='space-y-2'
 			onSubmit={handleSubmit}
 		>
-			<div className='-space-y-px'>
+			<div>
 				{loginFields.map((field) => (
-					<Input
+					<FormInput
 						key={field.id}
 						handleChange={handleChange}
 						value={loginState[field.id]}
@@ -81,14 +81,13 @@ const LoginForm = () => {
 					/>
 				))}
 			</div>
-
-			<AuthFooter />
+			<FormFooter />
 			<FormAction
 				handler={handleSubmit}
 				text='Log In'
 				loading={loading}
 			/>
-			<Alert
+			<FormAlert
 				text={apiStatus}
 				success={apiSuccess}
 			/>
