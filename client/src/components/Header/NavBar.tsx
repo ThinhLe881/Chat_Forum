@@ -1,18 +1,12 @@
-import { useEffect, useState } from 'react';
 import Logo from './Logo';
 import UserEntry from './UserEntry';
 import UserStatus from './UserStatus';
 
-const NavBar = () => {
-	const [authenticated, setAuthenticated] = useState(() => {
-		return localStorage.getItem('token') ? true : false;
-	});
+type Props = {
+	authenticated: boolean;
+};
 
-	useEffect(() => {
-		const user = localStorage.getItem('token');
-		setAuthenticated(user ? true : false);
-	}, []);
-
+const NavBar = ({ authenticated }: Props) => {
 	return (
 		<div className='sticky top-0 z-50 bg-white px-2 py-1 shadow-sm md:px-4'>
 			<div className='flex items-center justify-between'>

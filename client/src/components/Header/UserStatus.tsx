@@ -1,18 +1,9 @@
-import { useNavigate } from 'react-router-dom';
-import Login from '../../assets/login.png';
-import Signup from '../../assets/signup.png';
-import Button from '../Utils/Button';
+import { useAuth } from '../../utils/AuthContext';
 
 const UserStatus = () => {
-	const navigate = useNavigate();
-	const handleRegister = () => {
-		navigate('/register');
-	};
-	const handleLogin = () => {
-		navigate('/login');
-	};
+	const { user } = useAuth();
 
-	return <></>;
+	return <div>{user ? user.name : ''}</div>;
 };
 
 export default UserStatus;

@@ -42,6 +42,7 @@ const FormInput = ({
 				id={id}
 				name={name}
 				type={type}
+				autoComplete='on'
 				required={isRequired}
 				className={fixedInputClass + customClass}
 				placeholder={placeholder}

@@ -1,13 +1,16 @@
 import { Route, Routes } from 'react-router-dom';
 import NavBar from './components/Header/NavBar';
+import { useAuth } from './utils/AuthContext';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 
 const App = () => {
+	const { auth } = useAuth();
+
 	return (
 		<div>
-			<NavBar />
+			<NavBar authenticated={auth} />
 			<div className='flex h-screen min-h-full items-center justify-center bg-blue-50'>
 				<div className='w-full max-w-5xl space-y-8'>
 					<Routes>

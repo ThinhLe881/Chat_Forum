@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginFields } from '../../constants/FormFields';
-import { User } from '../../constants/Type';
+import { useAuth } from '../../utils/AuthContext';
 import FormAction from './FormAction';
 import FormAlert from './FormAlert';
 import FormFooter from './FormFooter';
@@ -18,6 +18,7 @@ const LoginForm = () => {
 	const [apiSuccess, setApiSuccess] = useState(false);
 	const [apiStatus, setApiStatus] = useState('');
 	const [loading, setLoading] = useState(false);
+	const { setAuth } = useAuth();
 	const navigate = useNavigate();
 
 	const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -43,13 +44,10 @@ const LoginForm = () => {
 			},
 		})
 			.then((res) => {
-				const user: User = {
-					name: res.data.name,
-					id: res.data.id,
-				};
-				localStorage.setItem('user', JSON.stringify(user));
-				localStorage.setItem('token', res.data.token);
+				localStorage.setItem('auth-token', res.data.token);
+				localStorage.setItem('user-id', res.data.id);
 				setApiSuccess(true);
+				setAuth(true);
 				navigate('/', { replace: true });
 			})
 			.catch((err) => {
