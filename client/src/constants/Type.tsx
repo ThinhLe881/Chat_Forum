@@ -1,7 +1,10 @@
 type User = {
-	email: string;
-	name: string;
 	id: string;
+	name: string;
+	email?: string;
+	posts?: number;
+	comments?: number;
+	votes?: number;
 };
 
 export type { User };

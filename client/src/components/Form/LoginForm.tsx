@@ -44,7 +44,6 @@ const LoginForm = () => {
 		})
 			.then((res) => {
 				const user: User = {
-					email: res.data.email,
 					name: res.data.name,
 					id: res.data.id,
 				};
