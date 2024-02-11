@@ -56,13 +56,11 @@ export const login = async (req, res) => {
 			return res.status(400).send('Incorrect email or password. Please try again.');
 		}
 		// Create JWT token
-		const token = jwt.sign({ id: user._id }, process.env.TOKEN_SECRET, { expiresIn: '365d' }); // set long expirey time for easy testing
+		const token = jwt.sign({ id: user._id }, process.env.TOKEN_SECRET, { expiresIn: '365d' });
 
 		res.header('auth-token', token).status(200).send({
 			token: token,
 			id: user._id,
-			name: user.name,
-			email: user.email,
 			msg: 'Logged in successfully',
 		});
 	} catch (err) {
