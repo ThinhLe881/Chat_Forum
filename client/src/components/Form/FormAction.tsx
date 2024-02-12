@@ -10,7 +10,7 @@ type Props = {
 const FormAction = ({ handler, action = 'submit', text, loading }: Props) => {
 	return (
 		<>
-			{action === 'submit' ? (
+			{action === 'submit' && (
 				<button
 					disabled={loading}
 					type={action}
@@ -19,8 +19,6 @@ const FormAction = ({ handler, action = 'submit', text, loading }: Props) => {
 				>
 					{loading ? <Spinner /> : text}
 				</button>
-			) : (
-				<></>
 			)}
 		</>
 	);
