@@ -23,7 +23,7 @@ const RegisterForm = () => {
 		setRegisterState({ ...registerState, [e.target.id]: e.target.value });
 	};
 
-	const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+	const handleRegister: React.FormEventHandler<HTMLFormElement> = (e) => {
 		e.preventDefault();
 
 		if (verifyUsername() && verifyEmail() && verifyPassword()) {
@@ -97,7 +97,7 @@ const RegisterForm = () => {
 	};
 
 	return (
-		<form onSubmit={handleSubmit}>
+		<form onSubmit={handleRegister}>
 			<div>
 				{registerFields.map((field) => (
 					<FormInput
@@ -116,7 +116,7 @@ const RegisterForm = () => {
 				))}
 			</div>
 			<FormAction
-				handler={handleSubmit}
+				handler={handleRegister}
 				text={'Sign Up'}
 				loading={loading}
 			/>

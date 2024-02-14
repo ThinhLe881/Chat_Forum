@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../utils/AuthContext';
 import UserAvatar from '../Avatar/UserAvatar';
 import Spinner from '../Utils/Spinner';
-import UserDropdown from './UserDropDown';
+import UserDropdown from './UserDropdown';
 
 const UserStatus = () => {
 	const { user } = useAuth();

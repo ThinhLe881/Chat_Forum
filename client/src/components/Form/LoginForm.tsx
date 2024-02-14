@@ -26,7 +26,7 @@ const LoginForm = () => {
 		setLoginState({ ...loginState, [e.target.id]: e.target.value });
 	};
 
-	const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+	const handleLogin: React.FormEventHandler<HTMLFormElement> = (e) => {
 		e.preventDefault();
 		authenticateUser();
 	};
@@ -60,7 +60,7 @@ const LoginForm = () => {
 	return (
 		<form
 			className='space-y-2'
-			onSubmit={handleSubmit}
+			onSubmit={handleLogin}
 		>
 			<div>
 				{loginFields.map((field) => (
@@ -80,7 +80,7 @@ const LoginForm = () => {
 			</div>
 			<FormFooter />
 			<FormAction
-				handler={handleSubmit}
+				handler={handleLogin}
 				text='Log In'
 				loading={loading}
 			/>

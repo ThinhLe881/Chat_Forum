@@ -1,11 +1,7 @@
+import Feed from '../components/Center/Feed';
+
 const HomePage = () => {
-	return (
-		<>
-			<div className='text-center font-sans text-2xl font-extrabold text-orange-600'>
-				Welcome to Chat Forum
-			</div>
-		</>
-	);
+	return <Feed />;
 };
 
 export default HomePage;

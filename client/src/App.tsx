@@ -11,7 +11,7 @@ const App = () => {
 	return (
 		<div>
 			<NavBar authenticated={auth} />
-			<div className='flex h-screen min-h-full items-center justify-center bg-blue-50'>
+			<div className='flex h-screen min-h-full justify-center bg-blue-50'>
 				<div className='w-full max-w-5xl space-y-8'>
 					<Routes>
 						<Route
