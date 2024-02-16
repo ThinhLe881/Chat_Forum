@@ -1,7 +1,7 @@
-import Feed from '../components/Center/Feed';
-import FormCard from '../components/Form/FormCard';
-import FormHeader from '../components/Form/FormHeader';
-import RegisterForm from '../components/Form/RegisterForm';
+import { Feed } from '../features/feed';
+import { RegisterForm } from '../features/user';
+import FormCard from '../features/user/components/form/FormCard';
+import FormHeader from '../features/user/components/form/FormHeader';
 
 const RegisterPage = () => {
 	return (

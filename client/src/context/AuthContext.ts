@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, createContext, useContext } from 'react';
-import { User } from '../constants/Type';
+import { User } from '../features/user';
 
 interface IAuthContext {
 	auth: boolean;

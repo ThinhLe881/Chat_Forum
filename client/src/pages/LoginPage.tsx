@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Feed from '../components/Center/Feed';
-import FormCard from '../components/Form/FormCard';
-import FormHeader from '../components/Form/FormHeader';
-import LoginForm from '../components/Form/LoginForm';
+import { Feed } from '../features/feed';
+import { LoginForm } from '../features/user';
+import FormCard from '../features/user/components/form/FormCard';
+import FormHeader from '../features/user/components/form/FormHeader';
 
 const LoginPage = () => {
 	const loginRef = useRef<any>(null);

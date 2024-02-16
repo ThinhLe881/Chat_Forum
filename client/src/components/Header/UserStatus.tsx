@@ -1,8 +1,8 @@
 import { ChevronDownIcon, StarIcon } from '@heroicons/react/24/solid';
 import { useEffect, useRef, useState } from 'react';
-import { useAuth } from '../../utils/AuthContext';
-import UserAvatar from '../Avatar/UserAvatar';
-import Spinner from '../Utils/Spinner';
+import { useAuth } from '../../context/AuthContext';
+import Spinner from '../ui/Spinner';
+import UserAvatar from '../ui/UserAvatar';
 import UserDropdown from './UserDropdown';
 
 const UserStatus = () => {

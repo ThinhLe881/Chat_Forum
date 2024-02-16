@@ -1,4 +1,4 @@
-import Spinner from '../Utils/Spinner';
+import Spinner from '../../../../components/ui/Spinner';
 
 type Props = {
 	handler: React.FormEventHandler;

@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginFields } from '../../constants/FormFields';
-import { useAuth } from '../../utils/AuthContext';
-import FormAction from './FormAction';
-import FormAlert from './FormAlert';
-import FormFooter from './FormFooter';
-import FormInput from './FormInput';
+import { useAuth } from '../../../context/AuthContext';
+import { loginFields } from '../constants/FormFields';
+import FormAction from './form/FormAction';
+import FormAlert from './form/FormAlert';
+import FormFooter from './form/FormFooter';
+import FormInput from './form/FormInput';
 
 let fieldsText: { [id: string]: string } = {};
 let fieldsError: { [id: string]: string } = {};

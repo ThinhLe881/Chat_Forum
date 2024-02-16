@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { User } from '../../constants/Type';
-import { AuthContext } from '../../utils/AuthContext';
+import { User } from '../features/user';
+import { AuthContext } from './AuthContext';
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	const [auth, setAuth] = useState<boolean>(localStorage.getItem('auth-token') ? true : false);

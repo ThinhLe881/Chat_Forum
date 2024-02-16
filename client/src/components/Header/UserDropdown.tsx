@@ -5,9 +5,9 @@ import {
 	UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { useAuth } from '../../utils/AuthContext';
-import DropdownItem from '../Utils/DropdownItem';
-import ToggleButton from '../Utils/ToggleButton';
+import { useAuth } from '../../context/AuthContext';
+import DropdownItem from '../ui/DropdownItem';
+import ToggleButton from '../ui/ToggleButton';
 
 type Props = {
 	open: boolean;

@@ -1,4 +1,4 @@
-import Logo from './Logo';
+import Logo from '../ui/Logo';
 import UserEntry from './UserEntry';
 import UserStatus from './UserStatus';
 

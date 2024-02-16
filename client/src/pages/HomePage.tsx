@@ -1,4 +1,4 @@
-import Feed from '../components/Center/Feed';
+import { Feed } from '../features/feed';
 
 const HomePage = () => {
 	return <Feed />;

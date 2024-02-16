@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import Icon from '../../assets/icon.png';
+import Icon from '../../../../assets/icon.png';
 
 type Props = {
 	heading: string;
