@@ -1,10 +1,11 @@
 import axios from 'axios';
 
-export default async function registerUserApi(registerState: { [id: string]: string }): Promise<any> {
-  const response = await axios.post('/auth/register', {
-    name: registerState['username'],
-    email: registerState['email'],
-    password: registerState['password'],
+export default async function registerUserApi(inputState: { [id: string]: string }): Promise<any> {
+  const res = await axios.post('/auth/register', {
+    name: inputState['username'],
+    email: inputState['email'],
+    password: inputState['password'],
   });
-  return response.data;
+
+  return res.data;
 };

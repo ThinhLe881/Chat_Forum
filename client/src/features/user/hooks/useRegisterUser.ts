@@ -10,7 +10,7 @@ let fieldsText: { [id: string]: string } = Object.fromEntries(registerFields.map
 let fieldsError: { [id: string]: string } = Object.fromEntries(registerFields.map((field) => [field.id, '']));
 
 export default function useRegisterUser(): AuthenticationFormHook {
-	const [inputState, setRegisterState] = useState(fieldsText);
+	const [inputState, setInputState] = useState(fieldsText);
 	const [errorState, setErrorState] = useState(fieldsError);
 	const [apiSuccess, setApiSuccess] = useState(false);
 	const [apiStatus, setApiStatus] = useState('');
@@ -18,7 +18,7 @@ export default function useRegisterUser(): AuthenticationFormHook {
 
 	const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
 		setApiStatus('');
-		setRegisterState({ ...inputState, [e.target.id]: e.target.value });
+		setInputState({ ...inputState, [e.target.id]: e.target.value });
 	};
 
 	const verifyField = (field: string, regex: RegExp, errorMessage: string): boolean => {
@@ -46,14 +46,13 @@ export default function useRegisterUser(): AuthenticationFormHook {
 			await mutation.mutateAsync(inputState);
 			setApiStatus('Your account has been created successfully');
 			setApiSuccess(true);
-
-		} catch (error) {
-			if (error instanceof AxiosError) setApiStatus(error.response ? error.response.data : error.message);
+		} catch (err) {
+			if (err instanceof AxiosError) setApiStatus(err.response ? err.response.data : err.message);
 			setApiSuccess(false);
 		}
 	}, [mutation, inputState]);
 
-	const handleRegister: React.FormEventHandler<HTMLFormElement> = (e) => {
+	const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
 		e.preventDefault();
 		const usernameValid = verifyUsername();
 		const emailValid = verifyEmail();
@@ -69,6 +68,6 @@ export default function useRegisterUser(): AuthenticationFormHook {
 		apiStatus,
 		loading: mutation.isLoading,
 		handleChange,
-		handleRegister,
+		handleSubmit,
 	};
 }

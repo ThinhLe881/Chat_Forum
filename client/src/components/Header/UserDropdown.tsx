@@ -40,8 +40,8 @@ const UserDropdown = ({ open, online, setOnline }: Props) => {
 						<div>
 							<DropdownItem
 								onClick={(e) => {
-									setOnline(!online);
 									e.stopPropagation();
+									setOnline(!online);
 								}}
 								rightIcon={<ToggleButton isChecked={online} />}
 							>
@@ -67,8 +67,8 @@ const UserDropdown = ({ open, online, setOnline }: Props) => {
 						<div>
 							<DropdownItem
 								onClick={(e) => {
-									setDarkMode(!darkMode);
 									e.stopPropagation();
+									setDarkMode(!darkMode);
 								}}
 								rightIcon={<ToggleButton isChecked={darkMode} />}
 							>

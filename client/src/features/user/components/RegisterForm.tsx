@@ -4,17 +4,12 @@ import FormAction from './form/FormAction';
 import FormAlert from './form/FormAlert';
 import FormInput from './form/FormInput';
 
-let fieldsText: { [id: string]: string } = {};
-let fieldsError: { [id: string]: string } = {};
-registerFields.forEach((field) => (fieldsText[field.id] = ''));
-registerFields.forEach((field) => (fieldsError[field.id] = ''));
-
 const RegisterForm = () => {
-	const { inputState, errorState, apiSuccess, apiStatus, loading, handleChange, handleRegister } =
+	const { inputState, errorState, apiSuccess, apiStatus, loading, handleChange, handleSubmit } =
 		useRegisterUser();
 
 	return (
-		<form onSubmit={handleRegister}>
+		<form onSubmit={handleSubmit}>
 			<div>
 				{registerFields.map((field) => (
 					<FormInput
@@ -28,12 +23,12 @@ const RegisterForm = () => {
 						type={field.type}
 						isRequired={field.isRequired}
 						placeholder={field.placeholder}
-						errorText={errorState[field.id]}
+						errorText={errorState ? errorState[field.id] : ''}
 					/>
 				))}
 			</div>
 			<FormAction
-				handler={handleRegister}
+				handler={handleSubmit}
 				text={'Sign Up'}
 				loading={loading}
 			/>
