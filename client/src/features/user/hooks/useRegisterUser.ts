@@ -47,7 +47,8 @@ export default function useRegisterUser(): AuthenticationFormHook {
 			setApiStatus('Your account has been created successfully');
 			setApiSuccess(true);
 		} catch (err) {
-			if (err instanceof AxiosError) setApiStatus(err.response ? err.response.data : err.message);
+			if (err instanceof AxiosError)
+				setApiStatus(err.response ? err.response.data : err.message);
 			setApiSuccess(false);
 		}
 	}, [mutation, inputState]);
@@ -57,7 +58,8 @@ export default function useRegisterUser(): AuthenticationFormHook {
 		const usernameValid = verifyUsername();
 		const emailValid = verifyEmail();
 		const passwordValid = verifyPassword();
-		if (usernameValid && emailValid && passwordValid && confirmPassword()) registerUser();
+		if (usernameValid && emailValid && passwordValid && confirmPassword())
+			registerUser();
 		setErrorState({ ...fieldsError });
 	};
 

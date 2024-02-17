@@ -5,7 +5,8 @@ import {
 	UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { logoutUser } from '../../features/user';
+import { useAuth } from '../../hooks/useAuth';
 import DropdownItem from '../ui/DropdownItem';
 import ToggleButton from '../ui/ToggleButton';
 
@@ -18,12 +19,6 @@ type Props = {
 const UserDropdown = ({ open, online, setOnline }: Props) => {
 	const [darkMode, setDarkMode] = useState(false);
 	const { setAuth } = useAuth();
-
-	const handleLogout = () => {
-		localStorage.removeItem('auth-token');
-		localStorage.removeItem('user-id');
-		setAuth(false);
-	};
 
 	return (
 		<>
@@ -89,7 +84,7 @@ const UserDropdown = ({ open, online, setOnline }: Props) => {
 					<div className='py-2.5'>
 						<div>
 							<DropdownItem
-								onClick={handleLogout}
+								onClick={() => logoutUser(setAuth)}
 								leftIcon={
 									<ArrowRightStartOnRectangleIcon className='h-6 w-6 text-slate-500' />
 								}

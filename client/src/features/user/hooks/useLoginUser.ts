@@ -2,7 +2,7 @@ import { AxiosError } from 'axios';
 import React, { useCallback, useState } from 'react';
 import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../context/AuthContext';
+import { useAuth } from '../../../hooks/useAuth';
 import { loginFields } from '../constants/FormFields';
 import { AuthenticationFormHook } from '../constants/Interface';
 import authenticateUserApi from '../services/authenticateUserApi';
@@ -31,7 +31,8 @@ export default function useLoginUser(): AuthenticationFormHook {
             setAuth(true);
             navigate('/', { replace: true });
         } catch (err) {
-            if (err instanceof AxiosError) err.response ? setApiStatus(err.response.data) : setApiStatus(err.message);
+            if (err instanceof AxiosError)
+                err.response ? setApiStatus(err.response.data) : setApiStatus(err.message);
             setApiSuccess(false);
         }
     }, [mutation, inputState]);

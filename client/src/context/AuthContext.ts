@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, createContext, useContext } from 'react';
+import { Dispatch, SetStateAction, createContext } from 'react';
 import { User } from '../features/user';
 
 interface IAuthContext {
@@ -10,7 +10,5 @@ interface IAuthContext {
 export const AuthContext = createContext<IAuthContext>({
 	auth: false,
 	user: null,
-	setAuth: () => {},
+	setAuth: () => { },
 });
-
-export const useAuth = () => useContext(AuthContext);

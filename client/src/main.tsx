@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
-import AuthProvider from './context/AuthProvider';
+import AuthProvider from './components/provider/AuthProvider';
 import './index.css';
 
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND;
