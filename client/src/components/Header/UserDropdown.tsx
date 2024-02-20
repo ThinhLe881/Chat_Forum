@@ -27,7 +27,8 @@ const UserDropdown = ({ open, online, setOnline }: Props) => {
 					<div className='py-2.5'>
 						<div>
 							<DropdownItem
-								leftIcon={<UserCircleIcon className='h-6 w-6 text-slate-500' />}
+								leftIcon={<UserCircleIcon className='dropdown-icon' />}
+								childrenStyle='dropdown-item text-slate-500'
 							>
 								My Stuff
 							</DropdownItem>
@@ -38,24 +39,48 @@ const UserDropdown = ({ open, online, setOnline }: Props) => {
 									e.stopPropagation();
 									setOnline(!online);
 								}}
-								rightIcon={<ToggleButton isChecked={online} />}
+								rightIcon={
+									<ToggleButton
+										id='online'
+										isChecked={online}
+									/>
+								}
+								childrenStyle='dropdown-item'
 							>
 								Online Status
 							</DropdownItem>
 						</div>
 						<div>
-							<DropdownItem onClick={() => {}}>Profile</DropdownItem>
+							<DropdownItem
+								onClick={() => {}}
+								childrenStyle='dropdown-item'
+							>
+								Profile
+							</DropdownItem>
 						</div>
 						<div>
-							<DropdownItem onClick={() => {}}>Style Avatar</DropdownItem>
+							<DropdownItem
+								onClick={() => {}}
+								childrenStyle='dropdown-item'
+							>
+								Style Avatar
+							</DropdownItem>
 						</div>
 						<div>
-							<DropdownItem onClick={() => {}}>User Settings</DropdownItem>
+							<DropdownItem
+								onClick={() => {}}
+								childrenStyle='dropdown-item'
+							>
+								User Settings
+							</DropdownItem>
 						</div>
 					</div>
 					<div className='py-2.5'>
 						<div>
-							<DropdownItem leftIcon={<EyeIcon className='h-6 w-6 text-slate-500' />}>
+							<DropdownItem
+								leftIcon={<EyeIcon className='dropdown-icon' />}
+								childrenStyle='dropdown-item text-slate-500'
+							>
 								View Options
 							</DropdownItem>
 						</div>
@@ -65,7 +90,13 @@ const UserDropdown = ({ open, online, setOnline }: Props) => {
 									e.stopPropagation();
 									setDarkMode(!darkMode);
 								}}
-								rightIcon={<ToggleButton isChecked={darkMode} />}
+								rightIcon={
+									<ToggleButton
+										id='darkmode'
+										isChecked={darkMode}
+									/>
+								}
+								childrenStyle='dropdown-item'
 							>
 								Dark Mode
 							</DropdownItem>
@@ -75,7 +106,8 @@ const UserDropdown = ({ open, online, setOnline }: Props) => {
 						<div>
 							<DropdownItem
 								onClick={() => {}}
-								leftIcon={<PlusCircleIcon className='h-6 w-6 text-slate-500' />}
+								leftIcon={<PlusCircleIcon className='dropdown-icon' />}
+								childrenStyle='dropdown-item'
 							>
 								Create a Community
 							</DropdownItem>
@@ -86,8 +118,9 @@ const UserDropdown = ({ open, online, setOnline }: Props) => {
 							<DropdownItem
 								onClick={() => logoutUser(setAuth)}
 								leftIcon={
-									<ArrowRightStartOnRectangleIcon className='h-6 w-6 text-slate-500' />
+									<ArrowRightStartOnRectangleIcon className='dropdown-icon' />
 								}
+								childrenStyle='dropdown-item'
 							>
 								Log Out
 							</DropdownItem>

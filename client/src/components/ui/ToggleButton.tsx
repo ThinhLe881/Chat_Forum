@@ -1,11 +1,14 @@
 type Props = {
+	id: string;
 	isChecked: boolean;
 };
 
-const ToggleButton = ({ isChecked }: Props) => {
+const ToggleButton = ({ id, isChecked }: Props) => {
 	return (
 		<label className='relative flex cursor-pointer items-center justify-center'>
 			<input
+				id={id}
+				name={id}
 				type='checkbox'
 				value=''
 				className='peer sr-only'

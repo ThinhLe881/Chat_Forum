@@ -1,10 +1,10 @@
 import { ChevronDownIcon, StarIcon } from '@heroicons/react/24/solid';
 import { useState } from 'react';
-import { useAuth } from '../../hooks/useAuth';
-import useOutsideClick from '../../hooks/useOutsideClick';
-import Spinner from '../ui/Spinner';
-import UserAvatar from '../ui/UserAvatar';
-import UserDropdown from './UserDropdown';
+import { useAuth } from '../../../hooks/useAuth';
+import useOutsideClick from '../../../hooks/useOutsideClick';
+import Spinner from '../../../components/ui/Spinner';
+import UserAvatar from '../../../components/ui/UserAvatar';
+import UserDropdown from '../../../components/header/UserDropdown';
 
 const UserStatus = () => {
 	const { user } = useAuth();
@@ -14,7 +14,7 @@ const UserStatus = () => {
 
 	return (
 		<div
-			className={`flex min-h-10 min-w-52 items-center justify-between rounded-md px-1 ${
+			className={`flex min-h-10 min-w-52 cursor-pointer items-center justify-between rounded-md px-1 ${
 				open && 'border'
 			} hover:border`}
 			ref={componentRef}
@@ -39,7 +39,7 @@ const UserStatus = () => {
 					<Spinner />
 				</div>
 			)}
-			<ChevronDownIcon className='h-4 w-4 text-slate-500' />
+			<ChevronDownIcon className='icon text-slate-600' />
 			<UserDropdown
 				open={open}
 				online={online}

@@ -3,8 +3,17 @@
 @tailwind utilities;
 
 @layer components {
+	.nav-icon {
+		@apply h-8 w-8 cursor-pointer rounded-md p-1
+        text-slate-600 lg:hover:bg-gray-200;
+	}
+	.dropdown-icon {
+		@apply h-6 w-6 text-slate-500;
+	}
 	.icon {
-		@apply h-10 w-10 cursor-pointer rounded-sm p-2
-        lg:hover:bg-gray-200;
+		@apply h-4 w-4;
+	}
+	.dropdown-item {
+		@apply flex-grow text-sm font-medium;
 	}
 }

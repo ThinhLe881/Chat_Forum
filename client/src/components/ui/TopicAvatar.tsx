@@ -2,7 +2,7 @@ type Props = {
 	name: string;
 };
 
-const CommunityAvatar = ({ name }: Props) => {
+const TopicAvatar = ({ name }: Props) => {
 	return (
 		<div
 			className={`'h-7 w-7' relative h-10 w-10 flex-shrink-0 overflow-hidden
@@ -13,4 +13,4 @@ const CommunityAvatar = ({ name }: Props) => {
 	);
 };
 
-export default CommunityAvatar;
+export default TopicAvatar;
