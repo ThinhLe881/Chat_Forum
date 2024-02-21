@@ -20,10 +20,30 @@ const NavBar = ({ authenticated }: Props) => {
 				<Logo />
 				<TopicButton />
 				<TopicSearchBar />
-				<ArrowTrendingUpIcon className='nav-icon' />
-				<ChatBubbleOvalLeftEllipsisIcon className='nav-icon' />
-				<BellIcon className='nav-icon' />
-				<PlusIcon className='nav-icon' />
+				<div className='group relative inline-block'>
+					<ArrowTrendingUpIcon className='nav-icon' />
+					<span className='invisible absolute -left-3 mt-0.5 rounded-md bg-black px-2 py-1 text-xs font-medium text-white group-hover:visible'>
+						Popular
+					</span>
+				</div>
+				<div className='group relative inline-block'>
+					<ChatBubbleOvalLeftEllipsisIcon className='nav-icon' />
+					<span className='invisible absolute -left-1 mt-0.5 rounded-md bg-black px-2 py-1 text-xs font-medium text-white group-hover:visible'>
+						Chat
+					</span>
+				</div>
+				<div className='group relative inline-block'>
+					<BellIcon className='nav-icon' />
+					<span className='invisible absolute -left-[1.6rem] mt-0.5 rounded-md bg-black px-2 py-1 text-xs font-medium text-white group-hover:visible'>
+						Notifications
+					</span>
+				</div>
+				<div className='group relative inline-block'>
+					<PlusIcon className='nav-icon' />
+					<span className='invisible absolute -left-[1.4rem] mt-0.5 min-w-20 rounded-md bg-black px-2 py-1 text-xs font-medium text-white group-hover:visible'>
+						Create Post
+					</span>
+				</div>
 				{authenticated ? <UserStatus /> : <UserEntry />}
 			</div>
 		</div>

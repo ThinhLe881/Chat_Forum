@@ -24,7 +24,10 @@ const UserStatus = () => {
 				<div className='flex flex-grow'>
 					<UserAvatar userId={user.id} />
 					{online && (
-						<div className='absolute bottom-[0.45rem] right-[11.75rem] h-3 w-3 rounded-full border-2 border-white bg-green-500'></div>
+						<span className='absolute bottom-[0.45rem] right-[11.80rem] flex h-3 w-3'>
+							<div className='absolute h-full w-full animate-ping rounded-full border-2 bg-green-500 opacity-75'></div>
+							<div className='relative inline-flex h-3 w-3 rounded-full border-2 border-white bg-green-500'></div>
+						</span>
 					)}
 					<div className='flex flex-grow flex-col'>
 						<div className='text-sm font-medium'>{user.name}</div>
