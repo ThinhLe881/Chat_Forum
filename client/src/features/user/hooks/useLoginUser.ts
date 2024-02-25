@@ -25,8 +25,8 @@ export default function useLoginUser(): AuthenticationFormHook {
     const authenticateUser = useCallback(async () => {
         try {
             const data = await mutation.mutateAsync(inputState);
-            localStorage.setItem('auth-token', data.token);
-            localStorage.setItem('user-id', data.id);
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('id', data.id);
             setApiSuccess(true);
             setAuth(true);
             navigate('/', { replace: true });

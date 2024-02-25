@@ -8,8 +8,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	const [user, setUser] = useState<User | null>(null);
 
 	useEffect(() => {
-		const token = localStorage.getItem('auth-token');
-		const userId = localStorage.getItem('user-id');
+		const token = localStorage.getItem('token');
+		const userId = localStorage.getItem('id');
 
 		if (token && userId) {
 			axios({

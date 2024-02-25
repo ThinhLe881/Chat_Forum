@@ -61,7 +61,7 @@ export const addPost = async (req, res) => {
 		await Users.updateOne({ _id: creatorId }, { $inc: { posts: 1 } }, { session });
 		res.status(201).send({
 			post: newPost,
-			msg: 'Post added successfully',
+			msg: 'Post created successfully',
 		});
 		await session.commitTransaction();
 	} catch (err) {
@@ -101,12 +101,11 @@ export const deletePost = async (req, res) => {
 		session.startTransaction(transactionOptions);
 		const creatorId = getUserId(req);
 		const postId = Types.ObjectId(req.params.id);
-		// Delete the post and its comments
+		// Delete the post, the comments will be deleted later
 		const deletedPost = await Posts.findOneAndDelete(
 			{ _id: postId, creatorId: creatorId },
 			{ session }
 		);
-		await Comments.deleteMany({ postId: postId }, { session });
 		// Update the creator info
 		await Users.updateOne(
 			{ _id: creatorId },
@@ -167,7 +166,8 @@ export const votePost = async (req, res) => {
 				numVotes = voteType ? -2 : 2;
 				break;
 			default:
-				break;
+				await session.abortTransaction();
+				return res.status(400).send('Invalid argument');
 		}
 		// Update the votes of the post
 		const updatedPost = await Posts.findByIdAndUpdate(

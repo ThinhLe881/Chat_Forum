@@ -5,7 +5,6 @@ import {
 	UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { logoutUser } from '../../features/user';
 import { useAuth } from '../../hooks/useAuth';
 import DropdownItem from '../ui/DropdownItem';
 import ToggleButton from '../ui/ToggleButton';
@@ -116,7 +115,10 @@ const UserDropdown = ({ open, online, setOnline }: Props) => {
 					<div className='py-2.5'>
 						<div>
 							<DropdownItem
-								onClick={() => logoutUser(setAuth)}
+								onClick={() => {
+									localStorage.clear();
+									setAuth(false);
+								}}
 								leftIcon={
 									<ArrowRightStartOnRectangleIcon className='dropdown-icon' />
 								}
