@@ -1,4 +1,8 @@
+import { startSession } from 'mongoose';
+import { transactionOptions } from '../helpers/transactionOptions.js';
+import Posts from '../models/post.model.js';
 import Topics from '../models/topic.model.js';
+import UserTopics from '../models/userTopic.model.js';
 
 export const checkTopicExist = async (req, res, next) => {
 	if (!(await Topics.findOne({ topicName: req.params.topic }))) {
@@ -19,13 +23,6 @@ export const cleanUpDeletedTopic = async (req, res, next) => {
 	} catch (err) {
 		console.log(err);
 		await session.abortTransaction();
-		const creatorId = getUserId(req);
-		// Re-create the deleted topic
-		const newTopic = new Topics({
-			topicName: req.params.topic,
-			creatorId: creatorId,
-		});
-		await newTopic.save();
 	} finally {
 		await session.endSession();
 	}

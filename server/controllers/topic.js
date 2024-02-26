@@ -48,7 +48,7 @@ export const createTopic = async (req, res) => {
 	}
 };
 
-export const deleteTopic = async (req, res) => {
+export const deleteTopic = async (req, res, next) => {
 	try {
 		const creatorId = getUserId(req);
 		const topic = await Topics.findOne({
@@ -66,6 +66,7 @@ export const deleteTopic = async (req, res) => {
 		const deletedTopic = await Topics.findByIdAndDelete(topic._id);
 		res.status(200).send(deletedTopic);
 		// res.status(200).send('Delete topic successfully');
+		next();
 	} catch (err) {
 		console.log(err);
 		res.status(500).send(err);

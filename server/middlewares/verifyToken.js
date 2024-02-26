@@ -5,7 +5,7 @@ config();
 
 export const verifyUserToken = function (req, res, next) {
 	const token = req.header('token');
-	if (!token) {
+	if (!token || typeof token !== 'string') {
 		return res.status(401).send('Access denied');
 	}
 	try {
