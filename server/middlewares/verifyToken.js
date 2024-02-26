@@ -4,7 +4,7 @@ import { config } from 'dotenv';
 config();
 
 export const verifyUserToken = function (req, res, next) {
-	const token = req.header('auth-token');
+	const token = req.header('token');
 	if (!token) {
 		return res.status(401).send('Access denied');
 	}
@@ -19,7 +19,7 @@ export const verifyUserToken = function (req, res, next) {
 
 export const verifyAdminToken = function (req, res, next) {
 	try {
-		const adminToken = req.header('admin-token');
+		const adminToken = req.header('admin');
 		if (!adminToken || adminToken != process.env.ADMIN) {
 			return res.status(401).send('Access denied');
 		} else {

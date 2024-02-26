@@ -1,22 +1,25 @@
+import express from 'express';
 import {
-	getTopics,
-	getPostsByTopic,
 	createTopic,
 	deleteTopic,
 	favoriteTopic,
-	leaveTopic,
+	getPostsByTopic,
+	getUserTopics,
 	joinTopic,
+	leaveTopic,
 } from '../controllers/topic.js';
-import express from 'express';
+import { checkTopicExist, cleanUpDeletedTopic } from '../middlewares/topic.js';
+import { verifyUserToken } from '../middlewares/verifyToken.js';
 
 const router = express.Router();
 
-router.get('/', getTopics);
 router.get('/:topic', getPostsByTopic);
-router.post('/:topic', createTopic);
-router.post('/join/:topic', joinTopic);
-router.post('/leave/:topic', leaveTopic);
-router.patch('/favorite/:topic/:fav', favoriteTopic);
-router.delete('/:topic', deleteTopic);
+router.get('/', verifyUserToken, getUserTopics);
+router.post('/create/:topic', verifyUserToken, createTopic);
+router.post('/join/:topic', verifyUserToken, checkTopicExist, joinTopic);
+router.post('/leave/:topic', verifyUserToken, checkTopicExist, leaveTopic);
+router.patch('/favorite/:topic', verifyUserToken, checkTopicExist, favoriteTopic(true));
+router.patch('/unfavorite/:topic', verifyUserToken, checkTopicExist, favoriteTopic(false));
+router.delete('/:topic', verifyUserToken, deleteTopic, cleanUpDeletedTopic);
 
 export default router;

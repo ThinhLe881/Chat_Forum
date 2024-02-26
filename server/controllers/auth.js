@@ -1,19 +1,15 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { registerValidation, loginValidation } from '../helpers/auth.js';
+import { loginValidation, registerValidation } from '../helpers/auth.js';
+import { errorMessageFormat } from '../helpers/errorMessageFormat.js';
 import Users from '../models/user.model.js';
-
-function error_message_format(mes) {
-	let newMes = mes.replaceAll('"', '');
-	return newMes.charAt(0).toUpperCase() + newMes.slice(1);
-}
 
 export const register = async (req, res) => {
 	try {
 		// User data validation
 		const { error } = registerValidation(req.body);
 		if (error) {
-			return res.status(400).send(error_message_format(error.details[0].message));
+			return res.status(400).send(errorMessageFormat(error.details[0].message));
 		}
 		if (await Users.findOne({ email: req.body.email })) {
 			return res
@@ -32,7 +28,8 @@ export const register = async (req, res) => {
 			email: req.body.email,
 			password: hashPassword,
 		});
-		await newUser.save();
+		const registeredUser = await newUser.save();
+		// res.status(201).send(registeredUser);
 		res.status(201).send('Registered successfully');
 	} catch (err) {
 		console.log(err);
@@ -45,7 +42,7 @@ export const login = async (req, res) => {
 		// User data validation
 		const { error } = loginValidation(req.body);
 		if (error) {
-			return res.status(400).send(error_message_format(error.details[0].message));
+			return res.status(400).send(errorMessageFormat(error.details[0].message));
 		}
 		const user = await Users.findOne({ email: req.body.email });
 		if (!user) {
@@ -61,7 +58,6 @@ export const login = async (req, res) => {
 		res.header('auth-token', token).status(200).send({
 			token: token,
 			id: user._id,
-			msg: 'Logged in successfully',
 		});
 	} catch (err) {
 		console.log(err);

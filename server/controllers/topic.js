@@ -11,8 +11,13 @@ export const createTopic = async (req, res) => {
 	try {
 		session.startTransaction(transactionOptions);
 		const creatorId = getUserId(req);
+		const topic = req.params.topic;
+		// Check whether the topic name satisfies requirements
+		if (topic.length < 3 || topic.length > 21) {
+			return res.status(400).send('Topic name must be between 3 and 21 characters');
+		}
 		// Check whether the topic already exists
-		if (await Topics.findOne({ topicName: req.params.topic })) {
+		if (await Topics.findOne({ topicName: topic })) {
 			await session.abortTransaction();
 			return res
 				.status(400)
@@ -21,15 +26,18 @@ export const createTopic = async (req, res) => {
 		// Create a new topic
 		const newTopic = new Topics(
 			{
-				topicName: req.params.topic,
+				topicName: topic,
 				creatorId: creatorId,
 			},
 			{ session }
 		);
 		await newTopic.save({ session });
-		await createUserTopic(creatorId, req.params.topic, session);
+		const newUserTopic = await createUserTopic(creatorId, topic, session);
 		await session.commitTransaction();
-		res.status(201).send(newTopic);
+		res.status(201).send({
+			topic: newTopic,
+			userTopic: newUserTopic,
+		});
 		// res.status(201).send('Topic created successfully');
 	} catch (err) {
 		console.log(err);
@@ -54,10 +62,8 @@ export const deleteTopic = async (req, res) => {
 				.send(
 					'Cannot find a topic with this name or the user is not the creator of this topic'
 				);
-		// Update the posts
-		await Posts.updateMany({ topic: req.params.topic }, { topic: '' });
 		// Delete the topic
-		const deletedTopic = await Topics.findByIdAndDelete(topic.id);
+		const deletedTopic = await Topics.findByIdAndDelete(topic._id);
 		res.status(200).send(deletedTopic);
 		// res.status(200).send('Delete topic successfully');
 	} catch (err) {
@@ -68,12 +74,12 @@ export const deleteTopic = async (req, res) => {
 
 export const joinTopic = async (req, res) => {
 	try {
-		const creatorId = getUserId(req);
-		// Check whether the user already joined the topic
-		if (await UserTopics.findOne({ topicName: req.params.topic, userId: creatorId })) {
+		const userId = getUserId(req);
+		if (await UserTopics.findOne({ topicName: req.params.topic, userId: userId })) {
+			// Check whether the user already joined the topic
 			return res.status(400).send('The user already joined the topic');
 		}
-		const newUserTopic = await createUserTopic(creatorId, req.params.topic, null);
+		const newUserTopic = await createUserTopic(userId, req.params.topic, null);
 		res.status(200).send(newUserTopic);
 		// res.status(200).send('Joined topic successfully');
 	} catch (err) {
@@ -84,17 +90,17 @@ export const joinTopic = async (req, res) => {
 
 export const leaveTopic = async (req, res) => {
 	try {
-		const creatorId = getUserId(req);
+		const userId = getUserId(req);
 		const userTopics = await UserTopics.findOne({
 			topicName: req.params.topic,
-			userId: creatorId,
+			userId: userId,
 		});
 		// Check whether the user joined the topic
 		if (!userTopics) {
 			return res.status(400).send('The user did not join the topic');
 		}
 		// Delete the relationship
-		const deletedUserTopic = await UserTopics.findByIdAndDelete(userTopics.id);
+		const deletedUserTopic = await UserTopics.findByIdAndDelete(userTopics._id);
 		res.status(200).send(deletedUserTopic);
 		// res.status(200).send('Left topic successfully');
 	} catch (err) {
@@ -103,22 +109,22 @@ export const leaveTopic = async (req, res) => {
 	}
 };
 
-export const favoriteTopic = async (req, res) => {
+export const favoriteTopic = (isFavorite) => async (req, res) => {
 	try {
-		const creatorId = getUserId(req);
+		const userId = getUserId(req);
 		// Check whether the user joined the topic
 		const userTopic = await UserTopics.findOne({
 			topicName: req.params.topic,
-			userId: creatorId,
+			userId: userId,
 		});
 		if (!userTopic) {
 			return res.status(400).send('The user did not join the topic');
 		}
 		// Update the relationship
 		const updatedUserTopic = await UserTopics.findByIdAndUpdate(
-			userTopic.id,
+			userTopic._id,
 			{
-				favorite: req.params.fav,
+				favorite: isFavorite,
 			},
 			{ new: true }
 		);
@@ -130,16 +136,12 @@ export const favoriteTopic = async (req, res) => {
 	}
 };
 
-export const getTopics = async (req, res) => {
+export const getUserTopics = async (req, res) => {
 	try {
-		const topics = await Posts.aggregate([
-			{
-				$group: {
-					_id: '$topic',
-					total: { $sum: 1 },
-				},
-			},
-		]);
+		const userId = getUserId(req);
+		const topics = (await UserTopics.find({ userId: userId }))
+			.map((userTopic) => userTopic.topicName)
+			.sort();
 		res.status(200).send(topics);
 	} catch (err) {
 		console.log(err);
