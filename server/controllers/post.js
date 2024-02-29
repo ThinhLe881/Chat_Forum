@@ -1,11 +1,10 @@
 import { Types, startSession } from 'mongoose';
 import { transactionOptions } from '../helpers/transactionOptions.js';
 import { getUserId } from '../helpers/user.js';
-import Users from '../models/user.model.js';
-import Posts from '../models/post.model.js';
 import Comments from '../models/comment.model.js';
-import Votes from '../models/vote.model.js';
+import Posts from '../models/post.model.js';
 import Topics from '../models/topic.model.js';
+import Users from '../models/user.model.js';
 
 export const getPosts = async (req, res) => {
 	try {
@@ -25,7 +24,7 @@ export const getPostById = async (req, res) => {
 		const post = await Posts.findById(postId);
 		// Get the highest layer comments of the post
 		const comments = await Comments.find({ parentId: postId }).sort({
-			date: -1,
+			date: 1,
 		});
 		res.status(200).send({
 			post: post,
