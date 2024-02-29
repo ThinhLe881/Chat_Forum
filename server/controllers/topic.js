@@ -48,8 +48,10 @@ export const createTopic = async (req, res) => {
 	}
 };
 
-export const deleteTopic = async (req, res, next) => {
+export const deleteTopic = async (req, res) => {
+	const session = await startSession();
 	try {
+		session.startTransaction(transactionOptions);
 		const creatorId = getUserId(req);
 		const topic = await Topics.findOne({
 			topicName: req.params.topic,
@@ -64,12 +66,21 @@ export const deleteTopic = async (req, res, next) => {
 				);
 		// Delete the topic
 		const deletedTopic = await Topics.findByIdAndDelete(topic._id);
+
 		res.status(200).send(deletedTopic);
 		// res.status(200).send('Delete topic successfully');
-		next();
+
+		// Update the posts
+		await Posts.updateMany({ topic: req.params.topic }, { topic: '' }, { session });
+		// Delete userTopics
+		await UserTopics.deleteMany({ topicName: req.params.topic }, { session });
+		await session.commitTransaction();
 	} catch (err) {
 		console.log(err);
 		res.status(500).send(err);
+		await session.abortTransaction();
+	} finally {
+		await session.endSession();
 	}
 };
 

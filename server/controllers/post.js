@@ -97,7 +97,7 @@ export const editPost = async (req, res) => {
 	}
 };
 
-export const deletePost = async (req, res, next) => {
+export const deletePost = async (req, res) => {
 	const session = await startSession();
 	try {
 		session.startTransaction(transactionOptions);
@@ -114,10 +114,13 @@ export const deletePost = async (req, res, next) => {
 			{ $inc: { posts: -1, votes: -deletedPost.votes } },
 			{ session }
 		);
+
 		res.status(200).send(deletedPost);
 		// res.status(200).send('Post deleted successfully');
+
+		// Delete all comments
+		await Comments.deleteMany({ postId: postId }, { session });
 		await session.commitTransaction();
-		next();
 	} catch (err) {
 		console.log(err);
 		res.status(500).send(err);

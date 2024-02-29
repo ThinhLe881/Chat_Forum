@@ -8,7 +8,7 @@ import {
 	joinTopic,
 	leaveTopic,
 } from '../controllers/topic.js';
-import { checkTopicExist, cleanUpDeletedTopic } from '../middlewares/topic.js';
+import { checkTopicExist } from '../middlewares/topic.js';
 import { verifyUserToken } from '../middlewares/verifyToken.js';
 
 const router = express.Router();
@@ -20,6 +20,6 @@ router.post('/join/:topic', verifyUserToken, checkTopicExist, joinTopic);
 router.post('/leave/:topic', verifyUserToken, checkTopicExist, leaveTopic);
 router.patch('/favorite/:topic', verifyUserToken, checkTopicExist, favoriteTopic(true));
 router.patch('/unfavorite/:topic', verifyUserToken, checkTopicExist, favoriteTopic(false));
-router.delete('/:topic', verifyUserToken, deleteTopic, cleanUpDeletedTopic);
+router.delete('/:topic', verifyUserToken, deleteTopic);
 
 export default router;
