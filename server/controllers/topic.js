@@ -65,7 +65,7 @@ export const deleteTopic = async (req, res) => {
 					'Cannot find a topic with this name or the user is not the creator of this topic'
 				);
 		// Delete the topic
-		const deletedTopic = await Topics.findByIdAndDelete(topic._id);
+		const deletedTopic = await Topics.findByIdAndDelete(topic._id, { session });
 
 		res.status(200).send(deletedTopic);
 		// res.status(200).send('Delete topic successfully');

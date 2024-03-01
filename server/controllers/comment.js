@@ -1,4 +1,5 @@
 import { Types, startSession } from 'mongoose';
+import { deleteCommentsRecursively } from '../helpers/comment.js';
 import { transactionOptions } from '../helpers/transactionOptions.js';
 import { getUserId } from '../helpers/user.js';
 import Comments from '../models/comment.model.js';
@@ -22,7 +23,7 @@ export const getCommentById = async (req, res) => {
 	}
 };
 
-export const addComment = (isChild) => async (req, res, next) => {
+export const addComment = (isChild) => async (req, res) => {
 	const session = await startSession();
 	try {
 		session.startTransaction(transactionOptions);
@@ -37,7 +38,17 @@ export const addComment = (isChild) => async (req, res, next) => {
 				{ $inc: { comments: 1 } },
 				{ session }
 			);
+			if (!parentComment) {
+				await session.abortTransaction();
+				return res.status(400).send('Cannot find a comment with this ID');
+			}
 			postId = parentComment.postId;
+		} else {
+			// Check if the post exists and update the post comments stats
+			if (!(await Posts.findByIdAndUpdate(postId, { $inc: { comments: 1 } }, { session }))) {
+				await session.abortTransaction();
+				return res.status(400).send('Cannot find a post with this ID');
+			}
 		}
 		// Create a new comment
 		const newComment = new Comments(
@@ -50,14 +61,11 @@ export const addComment = (isChild) => async (req, res, next) => {
 			},
 			{ session }
 		);
-		// Insert the comment and update the parent post and user
 		await newComment.save({ session });
 
 		res.status(201).send(newComment);
 		// res.status(201).send('Comment added successfully');
 
-		// Update post comments
-		await Posts.updateOne({ _id: postId }, { $inc: { comments: 1 } }, { session });
 		// Update user stats
 		await Users.updateOne({ _id: creatorId }, { $inc: { comments: 1 } }, { session });
 		await session.commitTransaction();
@@ -109,19 +117,22 @@ export const deleteComment = async (req, res) => {
 		// res.status(200).send('Child comment deleted successfully');
 
 		// Update parent comment if there is
-		await Comments.updateOne(
-			{ _id: deletedComment.parentId },
-			{ $inc: { comments: -(deletedComment.comments + 1) } },
+		const parentComment = await Comments.findByIdAndUpdate(
+			deletedComment.parentId,
+			{ $inc: { comments: -1 } },
 			{ session }
 		);
-		// Delete child comments of deleted comment
-		await Comments.deleteMany({ parentId: commentId }, { session });
-		// Update post comments
-		await Posts.updateOne(
-			{ _id: deletedComment.postId },
-			{ $inc: { comments: -(deletedComment.comments + 1) } },
-			{ session }
-		);
+		// If there is no parent comment -> parent doc is a post -> update post comments
+		if (!parentComment) {
+			await Posts.updateOne(
+				{ _id: deletedComment.postId },
+				{ $inc: { comments: -1 } },
+				{ session }
+			);
+		}
+		// Delete all child comments of deleted comment recursively
+		const childCommentIds = await deleteCommentsRecursively(commentId);
+		await Comments.deleteMany({ _id: { $in: childCommentIds } }, { session });
 		// Update user stats
 		await Users.updateOne(
 			{ _id: creatorId },

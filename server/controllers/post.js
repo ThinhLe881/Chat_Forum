@@ -62,11 +62,13 @@ export const addPost = async (req, res) => {
 			},
 			{ session }
 		);
-		// Insert the post and update the creator info
 		await newPost.save({ session });
-		await Users.updateOne({ _id: creatorId }, { $inc: { posts: 1 } }, { session });
+
 		res.status(201).send(newPost);
 		// res.status(201).send('Post created successfully');
+
+		// Update the creator info
+		await Users.updateOne({ _id: creatorId }, { $inc: { posts: 1 } }, { session });
 		await session.commitTransaction();
 	} catch (err) {
 		console.log(err);
@@ -108,18 +110,18 @@ export const deletePost = async (req, res) => {
 			{ _id: postId, creatorId: creatorId },
 			{ session }
 		);
-		// Update the creator info
-		await Users.updateOne(
-			{ _id: creatorId },
-			{ $inc: { posts: -1, votes: -deletedPost.votes } },
-			{ session }
-		);
 
 		res.status(200).send(deletedPost);
 		// res.status(200).send('Post deleted successfully');
 
 		// Delete all comments
 		await Comments.deleteMany({ postId: postId }, { session });
+		// Update the creator info
+		await Users.updateOne(
+			{ _id: creatorId },
+			{ $inc: { posts: -1, votes: -deletedPost.votes } },
+			{ session }
+		);
 		await session.commitTransaction();
 	} catch (err) {
 		console.log(err);
