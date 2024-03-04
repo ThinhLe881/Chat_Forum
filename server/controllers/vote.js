@@ -1,132 +1,82 @@
-import { startSession } from 'mongoose';
+import { startSession, Types } from 'mongoose';
 import { transactionOptions } from '../helpers/transactionOptions.js';
-import Posts from '../models/post.model.js';
+import { getUserId } from '../helpers/user.js';
 import Comments from '../models/comment.model.js';
+import Posts from '../models/post.model.js';
+import Users from '../models/user.model.js';
 import Votes from '../models/vote.model.js';
 
-export const votePost = async (req, res) => {
+export const voteDoc = (isUndo, voteType) => async (req, res) => {
 	const session = await startSession();
 	try {
 		session.startTransaction(transactionOptions);
 		const userId = getUserId(req);
-		const postId = Types.ObjectId(req.params.id);
-		const option = req.params.option;
-		const voteType = req.params.type === 'true';
-		const post = await Posts.findById(postId, null, { session });
-		const creatorId = post.creatorId;
-		let numVotes;
-		switch (option) {
-			case '0': // New vote
-				// Create new vote
-				const newVote = new Votes(
-					{
-						docId: postId,
-						userId: userId,
-						voteType: voteType,
-					},
-					{ session }
-				);
-				await newVote.save({ session });
-				numVotes = voteType ? 1 : -1;
-				break;
-			case '1': // Undo vote
-				// Delete existed vote
-				await Votes.deleteOne({ docId: postId, userId: userId }, { session });
-				numVotes = voteType ? -1 : 1;
-				break;
-			case '2': // Add a opposite sign vote
-				// Update existed vote
-				await Votes.updateOne(
-					{ docId: postId, userId: userId },
-					{ voteType: voteType },
-					{ session }
-				);
-				numVotes = voteType ? -2 : 2;
-				break;
-			default:
-				await session.abortTransaction();
-				return res.status(400).send('Invalid argument');
+		const docId = Types.ObjectId(req.params.id);
+		const post = await Posts.findById(docId);
+		const comment = await Comments.findById(docId);
+		let newNumVotes;
+		if (!post && !comment) {
+			await session.abortTransaction();
+			return res.status(400).send('Cannot find the document with this ID');
 		}
-		// Update the votes of the post
-		const updatedPost = await Posts.findByIdAndUpdate(
-			postId,
-			{ $inc: { votes: numVotes } },
-			{ session: session, new: true }
-		);
-		// Update the votes for the post's creator
-		await Users.updateOne({ _id: creatorId }, { $inc: { votes: numVotes } }, { session });
-		res.status(200).send({
-			post: updatedPost,
-			msg: 'Updated votes successfully',
-		});
-		await session.commitTransaction();
-	} catch (err) {
-		console.log(err);
-		res.status(500).send(err);
-		await session.abortTransaction();
-	} finally {
-		await session.endSession();
-	}
-};
 
-export const voteComment = async (req, res) => {
-	const session = await startSession();
-	try {
-		session.startTransaction(transactionOptions);
-		const userId = getUserId(req);
-		const commentId = Types.ObjectId(req.params.id);
-		const voteType = req.params.type === 'true';
-		const option = req.params.option;
-		const post = await Comments.findById(commentId, null, { session });
-		const creatorId = post.creatorId;
-		let numVotes;
-		switch (option) {
-			case '0': // New vote
-				// Create new vote
+		const vote = await Votes.findOne({ docId: docId, userId: userId });
+		if (isUndo) {
+			if (vote) {
+				await Votes.deleteOne({ _id: vote._id }, { session });
+				newNumVotes = vote.voteType ? -1 : 1;
+				res.status(200).send('Deleted vote successfully');
+			} else {
+				await session.abortTransaction();
+				return res
+					.status(400)
+					.send('Cannot find the vote with this document ID and user ID');
+			}
+		} else {
+			if (vote) {
+				if (vote.voteType !== voteType) {
+					// Update existed vote
+					await Votes.updateOne({ _id: vote._id }, { voteType: voteType }, { session });
+					newNumVotes = voteType ? 2 : -2;
+					res.status(200).send('Updated vote successfully');
+				} else {
+					await session.abortTransaction();
+					return res.status(400).send('Vote unchanged');
+				}
+			} else {
+				// Create new vote if there is no existing vote
 				const newVote = new Votes(
 					{
-						docId: commentId,
+						docId: docId,
 						userId: userId,
 						voteType: voteType,
 					},
 					{ session }
 				);
 				await newVote.save({ session });
-				numVotes = voteType ? 1 : -1;
-				break;
-			case '1': // Undo vote
-				// Delete existed vote
-				await Votes.deleteOne({ docId: commentId, userId: userId }, { session });
-				numVotes = voteType ? -1 : 1;
-				break;
-			case '2': // Add a opposite sign vote
-				// Update existed vote
-				await Votes.updateOne(
-					{ docId: commentId, userId: userId },
-					{ voteType: voteType },
-					{ session }
-				);
-				numVotes = voteType ? -2 : 2;
-				break;
-			default:
-				break;
+				newNumVotes = voteType ? 1 : -1;
+				res.status(201).send('Created vote successfully');
+			}
 		}
-		// Update the votes of the comment
-		const updatedComment = await Comments.findByIdAndUpdate(
-			commentId,
-			{ $inc: { votes: numVotes } },
-			{ session: session, new: true }
-		);
-		// Update the votes for the comment's creator
-		await Users.updateOne({ _id: creatorId }, { $inc: { votes: numVotes } }, { session });
-		res.status(200).send({
-			comment: updatedComment,
-			msg: 'Updated votes successfully',
-		});
+		// Update the votes of the document
+		let creatorId;
+		if (post) {
+			creatorId = post.creatorId;
+			await Posts.updateOne({ _id: post._id }, { $inc: { votes: newNumVotes } }, { session });
+		} else {
+			creatorId = comment.creatorId;
+			await Comments.updateOne(
+				{ _id: comment._id },
+				{ $inc: { votes: newNumVotes } },
+				{ session }
+			);
+		}
+		// Update the votes for the document's creator
+		await Users.updateOne({ _id: creatorId }, { $inc: { votes: newNumVotes } }, { session });
 		await session.commitTransaction();
 	} catch (err) {
 		console.log(err);
-		res.status(500).send(err);
+		// res.status(500).send(err);
 		await session.abortTransaction();
 	} finally {
 		await session.endSession();
@@ -137,9 +87,11 @@ export const deleteVotes = async (req, res) => {
 	const session = await startSession();
 	try {
 		session.startTransaction(transactionOptions);
+		// Get IDs of all posts and comments
 		const postIds = (await Posts.find({}, { _id: 1 }, { session })).map((x) => x._id);
 		const commentIds = (await Comments.find({}, { _id: 1 }, { session })).map((x) => x._id);
 		const ids = [...postIds, ...commentIds];
+		// Delete the votes with the docIDs (postID or commentID) no longer exist (are not in the lists retrieved above)
 		await Votes.deleteMany({ docId: { $nin: ids } }, { session });
 		res.status(200).send('Deleted votes successfully');
 		await session.commitTransaction();

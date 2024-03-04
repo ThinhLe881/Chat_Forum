@@ -71,7 +71,7 @@ export const addComment = (isChild) => async (req, res) => {
 		await session.commitTransaction();
 	} catch (err) {
 		console.log(err);
-		res.status(500).send(err);
+		// res.status(500).send(err);
 		await session.abortTransaction();
 	} finally {
 		await session.endSession();
@@ -142,7 +142,7 @@ export const deleteComment = async (req, res) => {
 		await session.commitTransaction();
 	} catch (err) {
 		console.log(err);
-		res.status(500).send(err);
+		// res.status(500).send(err);
 		await session.abortTransaction();
 	} finally {
 		await session.endSession();
