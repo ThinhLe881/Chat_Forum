@@ -22,7 +22,7 @@ const UserDropdown = ({ open, online, setOnline }: Props) => {
 	return (
 		<>
 			{open && (
-				<div className='absolute right-4 top-10 mt-2.5 flex min-w-60 flex-col divide-y rounded-sm bg-white'>
+				<div className='absolute right-0 top-10 mt-1.5 flex min-w-60 flex-col divide-y rounded-sm bg-white'>
 					<div className='py-2.5'>
 						<div>
 							<DropdownItem
