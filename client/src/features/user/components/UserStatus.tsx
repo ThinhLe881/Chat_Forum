@@ -18,7 +18,7 @@ const UserStatus = () => {
 			ref={componentRef}
 		>
 			<div
-				className={`flex min-h-10 min-w-52 cursor-pointer items-center justify-between rounded-md px-1 ${
+				className={`flex min-h-10 cursor-pointer items-center justify-between rounded-md px-1 md:min-w-52 ${
 					open && 'border'
 				} hover:border`}
 				onClick={() => setOpen(!open)}
@@ -32,7 +32,7 @@ const UserStatus = () => {
 								<div className='relative inline-flex h-3 w-3 rounded-full border-2 border-white bg-green-500'></div>
 							</span>
 						)}
-						<div className='flex flex-grow flex-col'>
+						<div className='hidden flex-grow flex-col md:flex'>
 							<div className='text-sm font-medium'>{user.name}</div>
 							<div className='flex items-center gap-x-0.5'>
 								<StarIcon className='h-3 w-3 text-orange-600' />
@@ -45,7 +45,7 @@ const UserStatus = () => {
 						<Spinner />
 					</div>
 				)}
-				<ChevronDownIcon className='icon text-slate-600' />
+				<ChevronDownIcon className='icon hidden text-slate-600 md:block' />
 			</div>
 			<UserDropdown
 				open={open}

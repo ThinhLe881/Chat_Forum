@@ -14,10 +14,10 @@ const Logo = () => {
 		>
 			<img
 				alt=''
-				className='h-10 w-10 rounded-full bg-orange-600 p-1'
+				className='h-8 w-8 rounded-full bg-orange-600 p-1'
 				src={Icon}
 			/>
-			<span className='ml-2 font-sans text-2xl font-extrabold text-orange-600'>
+			<span className='ml-2 hidden font-sans text-2xl font-extrabold text-orange-600 lg:block'>
 				chat forum
 			</span>
 		</div>
