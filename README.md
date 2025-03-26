@@ -1,3 +1,3 @@
-# Chat Forum
+# Bluedit
 
-Reddit-inspired chat forum using NodeJS, MongoDB, ReactJS, and TailwindCSS.
+Reddit-inspired social forum using NodeJS, MongoDB, ReactJS, and TailwindCSS.
